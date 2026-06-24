@@ -1,18 +1,64 @@
-# React + Vite
+# 🚀 React + Vite - Commerces Demo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 📦 Cách chạy project
 
-Currently, two official plugins are available:
+### 1. Clone project về máy
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Mở Terminal (CMD / PowerShell / Terminal) và chạy:
 
-## React Compiler
+git clone https://github.com/codingdeverlop/Commerces-Demo.git
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+cd Commerces-Demo
 
-Note: This will impact Vite dev & build performances.
+---
 
-## Expanding the ESLint configuration
+### 2. Cài Node.js (nếu chưa có)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Tải tại: https://nodejs.org  
+Kiểm tra:
+
+node -v
+npm -v
+
+---
+
+### 3. Cài thư viện
+
+npm install
+
+---
+
+### 4. Chạy API (json-server)
+
+Mở terminal mới và chạy:
+
+json-server --watch db.json --port 3000
+
+API chạy tại:
+http://localhost:3000
+
+---
+
+### 5. Chạy project React
+
+Mở terminal khác và chạy:
+
+npm run dev
+
+Project chạy tại:
+http://localhost:5173
+
+---
+
+## ⚠️ Lưu ý
+
+- Không tắt terminal chạy json-server
+- Nếu lỗi json-server:
+
+npm install -g json-server
+
+---
+
+## 🎉 Done
+
+Chạy xong là dùng được ngay 🚀
