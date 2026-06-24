@@ -401,3 +401,35 @@
     transform: translateY(0);
   }
 }
+
+.cart-item {
+  cursor: pointer;
+}
+
+.cart-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-count {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+
+  width: 18px;
+  height: 18px;
+
+  background: red;
+  color: white;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 11px;
+  font-weight: bold;
+}

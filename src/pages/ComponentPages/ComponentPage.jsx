@@ -1,33 +1,113 @@
 import { useEffect, useState } from "react";
-import { useParams, Link, Links } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/FooterUser";
 import "./ComponentPage.css";
 import { FaShippingFast, FaAddressCard, FaCcApplePay } from "react-icons/fa";
 import { MdCurrencyExchange } from "react-icons/md";
 import { AiOutlineShoppingCart } from "react-icons/ai";
-// import { TiTickOutline } from "react-icons/ti";
 import { FaGift } from "react-icons/fa6";
 import InstallmentModal from "../../pages/InstallmentModal";
 import SpecsModal from "../../pages/SpecsModal";
 import Sevicer from "../../components/Sevicer/Sevicer";
 import { getImageUrl } from "../../utils/imageUtils";
+import { toast } from "sonner";
 
 const ComponentPage = () => {
   const { id } = useParams(); // Lấy ID sản phẩm từ URL
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
-  const [relatedProducts, setRelatedProducts] = useState([]); // Danh sách 5 sản phẩm ngẫu nhiên
+  const [relatedProducts, setRelatedProducts] = useState([]); // Danh sách 5 linh kiện ngẫu nhiên
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSpecsOpen, setIsSpecsOpen] = useState(false);
 
+  // ================= LOGIC XỬ LÝ GIỎ HÀNG LINH KIỆN (ĐÃ SỬA ĐÚNG NHÃN) =================
+  const handleAddToCart = async (
+    redirectToCart = false,
+    customProductId = null,
+  ) => {
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+    if (!currentUser) {
+      toast.warning("Vui lòng đăng nhập để mua sản phẩm này!");
+      navigate("/login");
+      return;
+    }
+
+    const targetProductId = customProductId
+      ? String(customProductId)
+      : String(id);
+
+    try {
+      // 1. Fetch danh sách mới nhất tại thời điểm bấm nút
+      const cartRes = await fetch(
+        `http://localhost:3000/cart?userId=${currentUser.id}`,
+      );
+      let cartItems = [];
+      if (cartRes.ok) cartItems = await cartRes.json();
+
+      // 2. Tìm chính xác mục Linh kiện trùng ID
+      const existingItem = cartItems.find(
+        (item) =>
+          String(item.productId) === targetProductId &&
+          item.fromTable === "eventList",
+      );
+
+      if (existingItem) {
+        // Nếu đã có: Tăng số lượng lên
+        const updateRes = await fetch(
+          `http://localhost:3000/cart/${existingItem.id}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              quantity: Number(existingItem.quantity) + 1,
+            }),
+          },
+        );
+
+        if (updateRes.ok) {
+          toast.success("Đã tăng số lượng linh kiện trong giỏ hàng!");
+          window.dispatchEvent(new Event("cartUpdated"));
+          if (redirectToCart === true) navigate("/cart");
+        }
+      } else {
+        // Nếu chưa có: Tạo dòng mới có ID phân biệt
+        const newCartItem = {
+          id: `cart-comp-${targetProductId}-${Date.now()}`, // Định danh duy nhất để json-server không ghi đè lung tung
+          userId: currentUser.id,
+          productId: targetProductId,
+          quantity: 1,
+          fromTable: "eventList",
+        };
+
+        const postRes = await fetch("http://localhost:3000/cart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newCartItem),
+        });
+
+        if (postRes.ok) {
+          toast.success("Thêm linh kiện vào giỏ hàng thành công!");
+          window.dispatchEvent(new Event("cartUpdated"));
+          if (redirectToCart === true) navigate("/cart");
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi xử lý giỏ hàng Linh Kiện:", error);
+      toast.error("Không thể xử lý giỏ hàng!");
+    }
+  };
+
+  // ================= FETCH API DỮ LIỆU LINH KIỆN =================
   useEffect(() => {
     setLoading(true);
 
-    // 1. Tìm thông tin chi tiết sản phẩm đang click xem
+    // 1. Tìm thông tin chi tiết linh kiện từ bảng eventList
     fetch(`http://localhost:3000/eventList/${id}`)
       .then((res) => {
-        if (!res.ok) throw new Error("Không tìm thấy laptop");
+        if (!res.ok) throw new Error("Không tìm thấy Linh Kiện");
         return res.json();
       })
       .then((data) => {
@@ -38,15 +118,11 @@ const ComponentPage = () => {
         setProduct(null);
       });
 
-    // 2. Lấy dữ liệu từ bảng catenogies để làm sản phẩm tương tự
-    Promise.all([
-      fetch("http://localhost:3000/eventList").then((res) =>
-        res.json().catch(() => []),
-      ),
-    ])
-      .then(([laptopData]) => {
-        const allProducts = [...laptopData];
-        const industryProducts = allProducts.filter(
+    // 2. Lấy dữ liệu chuẩn từ bảng eventList để làm sản phẩm tương tự
+    fetch("http://localhost:3000/eventList")
+      .then((res) => res.json().catch(() => []))
+      .then((componentData) => {
+        const industryProducts = componentData.filter(
           (item) => String(item.id) !== String(id),
         );
         const shuffled = [...industryProducts].sort(() => 0.5 - Math.random());
@@ -68,19 +144,17 @@ const ComponentPage = () => {
     <div className="product-detail-page">
       <Header />
 
-      {/* 1. Thanh điều hướng */}
       <div className="bread-bar">
         <div className="inner-bread">
           <Link to="/">
             <span>Trang chủ </span>
           </Link>
           <Link to="/">
-            <span>Linh Kiện</span>
+            <span>Linh kiện mới</span>
           </Link>
         </div>
       </div>
 
-      {/* 2. Khung nội dung chi tiết */}
       <main className="product-detail-container">
         <h1 className="product-main-title">{product.name}</h1>
 
@@ -101,16 +175,12 @@ const ComponentPage = () => {
           <div className="detail-center-info">
             <div className="upgrade-options-box">
               <label>
-                <input type="radio" name="vga" defaultChecked /> NÂNG CẤP LÊN
-                VGA RTX 3060 CŨ + 2.400.000đ
+                <input type="radio" name="upgrade-option" defaultChecked /> BẢO
+                HÀNH TIÊU CHUẨN CỦA HÃNG
               </label>
               <label>
-                <input type="radio" name="vga" /> NÂNG CẤP LÊN VGA RTX 3060TI CŨ
-                + 3.400.000đ
-              </label>
-              <label>
-                <input type="radio" name="vga" /> NÂNG CẤP LÊN VGA RTX 3070TI CŨ
-                + 7.900.000đ
+                <input type="radio" name="upgrade-option" /> GÓI BẢO HÀNH VÀNG 1
+                ĐỔI 1 TẠI CỬA HÀNG + 250.000đ
               </label>
             </div>
 
@@ -128,26 +198,37 @@ const ComponentPage = () => {
                 <span className="gift-icons">
                   <FaGift />
                 </span>
-                Quà tặng / Khuyến mãi
+                Quà tặng / Khuyến mãi đi kèm
               </div>
               <ul className="gift-list">
                 <li>
-                  <strong>CHUỘT GAMING DAREU EM908 USB LED RGB GIÁ 350K</strong>
+                  <strong>
+                    TẶNG VOUCHER GIẢM 10% CHO LẦN MUA BÀN PHÍM CHUỘT TIẾP THEO
+                  </strong>
                 </li>
-                <li>BÀN PHÍM GAMING DAREU EK810 USB LED GIÁ 690K</li>
-                <li>TAI NGHE GAMING DAREU EH469 USB LED RGB GIÁ 450K</li>
-                <li>LÓT CHUỘT DAREU ESP109 FULL SIZE 90X40 GIÁ 160K</li>
+                <li>
+                  Hỗ trợ vệ sinh linh kiện, tra keo tản nhiệt miễn phí trọn đời
+                </li>
+                <li>Giao hàng nhanh trong vòng 2 giờ khu vực nội thành</li>
               </ul>
             </div>
 
             <div className="purchase-actions-group">
-              <button className="btn-add-to-cart-big">
+              {/* ĐÃ SỬA: Sắp xếp lại onClick truyền boolean false chuẩn chỉ */}
+              <button
+                className="btn-add-to-cart-big"
+                onClick={() => handleAddToCart(false)}
+              >
                 <strong>THÊM VÀO GIỎ HÀNG</strong>
                 <span>THÊM VÀO GIỎ ĐỂ CHỌN TIẾP</span>
               </button>
 
               <div className="sub-buy-buttons-row">
-                <button className="btn-buy-now-split">
+                {/* ĐÃ SỬA: Đồng bộ gọi hàm handleAddToCart(true) cho nút Mua Ngay */}
+                <button
+                  className="btn-buy-now-split"
+                  onClick={() => handleAddToCart(true)}
+                >
                   <strong>MUA NGAY</strong>
                   <span>Giao tận nơi hoặc trực tiếp</span>
                 </button>
@@ -175,19 +256,13 @@ const ComponentPage = () => {
               <span className="policy-icon-blue">
                 <FaAddressCard />
               </span>
-              <p>
-                Hỗ trợ trả góp lãi suất thấp cho các sản phẩm thông qua các đơn
-                vị tài chính
-              </p>
+              <p>Hỗ trợ trả góp lãi suất thấp thông qua các đơn vị tài chính</p>
             </div>
             <div className="policy-item-row">
               <span className="policy-icon-blue">
                 <FaCcApplePay />
               </span>
-              <p>
-                Trả góp lãi suất 0% qua thẻ tín dụng Visa, Master, JCB (áp dụng
-                một số mặt hàng nhất định)
-              </p>
+              <p>Trả góp lãi suất 0% qua thẻ tín dụng Visa, Master, JCB</p>
             </div>
             <div className="policy-item-row">
               <span className="policy-icon-blue">
@@ -199,105 +274,55 @@ const ComponentPage = () => {
         </div>
       </main>
 
-      {/* 3. Khối Mô tả & Thông số chi tiết */}
       <div className="product-description-section">
         <div className="description-layout-container">
           <div className="description-left-content">
             <div className="tab-header-title">
-              <h2>MÔ TẢ</h2>
+              <h2>MÔ TẢ SẢN PHẨM</h2>
             </div>
             <div className="main-specs-body">
-              <h3>THÔNG SỐ CHI TIẾT MÁY :</h3>
+              <h3>THÔNG SỐ CHI TIẾT KỸ THUẬT:</h3>
               <p className="review-text">
-                Đánh giá máy :{" "}
+                Đánh giá chung:{" "}
                 <strong>
-                  Hỗ trợ tốt trong công việc đồ họa , sử dụng games online
-                  offline rất tốt với cấu hình high setting
+                  Sản phẩm linh kiện máy tính chính hãng, hiệu năng cao, hoạt
+                  động bền bỉ và đạt độ ổn định lâu dài trong hệ thống máy bộ.
                 </strong>
               </p>
 
               <table className="specs-table-detail">
-                {/* Đã ép sát toàn bộ các cặp thẻ <tr><td> liền kề trên cùng 1 dòng nhằm triệt tiêu hoàn toàn khoảng trắng thừa sinh Hydration Error */}
                 <tbody>
-                  {product.name &&
-                  (product.name.includes("I5 12400F") ||
-                    product.name.includes("MSI FORGE")) ? (
-                    <>
-                      <tr>
-                        <td>
-                          <strong>MAIN</strong>
-                        </td>
-                        <td className="blue-text-link">ASROCK B660M PRO RS</td>
-                        <td>36TH</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <strong>CPU</strong>
-                        </td>
-                        <td>I5 12400F TRAY</td>
-                        <td>36TH</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <strong>RAM</strong>
-                        </td>
-                        <td className="blue-text-link">
-                          16G DDR4 3200 ( 16GX1 )
-                        </td>
-                        <td>36TH</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <strong>SSD</strong>
-                        </td>
-                        <td>256G M2 NVME</td>
-                        <td>36TH</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <strong>VGA</strong>
-                        </td>
-                        <td className="blue-text-link">
-                          GEFORCE RTX 2060 6G DDR6
-                        </td>
-                        <td>3TH</td>
-                      </tr>
-                    </>
-                  ) : (
-                    <>
-                      <tr>
-                        <td>
-                          <strong>THIẾT BỊ</strong>
-                        </td>
-                        <td>{product?.name || "Thiết bị chính hãng"}</td>
-                        <td>12TH</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <strong>MÀN HÌNH</strong>
-                        </td>
-                        <td>Độ phân giải tiêu chuẩn cao</td>
-                        <td>12TH</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <strong>CẤU HÌNH</strong>
-                        </td>
-                        <td className="blue-text-link">
-                          Xem chi tiết ở mục thông số kỹ thuật
-                        </td>
-                        <td>36TH</td>
-                      </tr>
-                    </>
-                  )}
+                  <tr>
+                    <td>
+                      <strong>TÊN LINH KIỆN</strong>
+                    </td>
+                    <td className="blue-text-link">{product.name}</td>
+                    <td>Chính hãng</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>PHÂN LOẠI</strong>
+                    </td>
+                    <td>Linh kiện ráp máy bộ / Nâng cấp lẻ</td>
+                    <td>Mới 100%</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>BẢO HÀNH</strong>
+                    </td>
+                    <td className="blue-text-link">
+                      36 Tháng (Theo tiêu chuẩn nhà sản xuất)
+                    </td>
+                    <td>36TH</td>
+                  </tr>
                   <tr>
                     <td>
                       <strong>PHỤ KIỆN</strong>
                     </td>
-                    <td className="blue-text-link">
-                      Dây nguồn tiêu chuẩn kèm theo vỏ hộp
+                    <td>
+                      Hộp sản phẩm, sách hướng dẫn, ốc vít đi kèm (nếu có)
                     </td>
-                    <td>12TH</td>
+                    <td>Fullbox</td>
                   </tr>
                 </tbody>
               </table>
@@ -306,49 +331,27 @@ const ComponentPage = () => {
 
           <div className="description-right-sidebar">
             <div className="widget-spec-box">
-              <h3>Thông số kỹ thuật</h3>
+              <h3>Tóm tắt thông số</h3>
               <div className="mini-table-container">
                 <table className="mini-specs-table">
                   <thead>
                     <tr>
-                      <th>LINH KIỆN</th>
-                      <th>SẢN PHẨM</th>
+                      <th>HẠNG MỤC</th>
+                      <th>THÔNG TIN CHUNG</th>
                       <th>BẢO HÀNH</th>
                     </tr>
                   </thead>
-                  {/* Ép sát dòng dữ liệu bảng phụ */}
                   <tbody>
-                    {product.name &&
-                    (product.name.includes("I5 12400F") ||
-                      product.name.includes("MSI FORGE")) ? (
-                      <>
-                        <tr>
-                          <td>MAIN</td>
-                          <td className="blue-text-link">
-                            ASROCK B660M PRO RS
-                          </td>
-                          <td>36TH</td>
-                        </tr>
-                        <tr>
-                          <td>CPU</td>
-                          <td>I5 12400F TRAY</td>
-                          <td>36TH</td>
-                        </tr>
-                      </>
-                    ) : (
-                      <>
-                        <tr>
-                          <td>THIẾT BỊ</td>
-                          <td>Theo máy</td>
-                          <td>12TH</td>
-                        </tr>
-                        <tr>
-                          <td>CẤU HÌNH</td>
-                          <td>Theo thông số chung</td>
-                          <td>36TH</td>
-                        </tr>
-                      </>
-                    )}
+                    <tr>
+                      <td>Thiết bị</td>
+                      <td className="blue-text-link">Chính hãng</td>
+                      <td>36TH</td>
+                    </tr>
+                    <tr>
+                      <td>Trạng thái</td>
+                      <td>Mới 100%</td>
+                      <td>Fullbox</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -363,54 +366,60 @@ const ComponentPage = () => {
         </div>
       </div>
 
-      {/* 4. Khối SẢN PHẨM TƯƠNG TỰ */}
       {relatedProducts.length > 0 && (
         <section className="related-products-section">
           <div className="related-inner-container">
             <h2 className="related-section-title">SẢN PHẨM TƯƠNG TỰ</h2>
             <div className="related-products-grid">
               {relatedProducts.map((item, index) => (
-                <Link
-                  to={`/component/${item.id}`}
+                <div
                   key={`${item.id}-${index}`}
-                  className="related-card-link"
+                  className="related-card-link-wrapper"
+                  style={{ position: "relative" }}
                 >
-                  <div className="related-product-card">
-                    <div className="related-card-img-wrapper">
-                      <img
-                        src={getImageUrl(item?.image)}
-                        alt={item?.name}
-                        onError={(e) => {
-                          e.currentTarget.onerror = null;
-                          e.currentTarget.src = getImageUrl(undefined);
-                        }}
-                      />
-                    </div>
-                    <div className="related-card-info-content">
-                      <h4>{item.name}</h4>
-                      <div className="related-price-row">
-                        <span className="related-price-current">
-                          {item.price.toLocaleString("vi-VN")}đ
-                        </span>
-                        <span className="related-price-old">
-                          {(item.price * 1.15).toLocaleString("vi-VN")}đ
-                        </span>
+                  <Link
+                    to={`/component/${item.id}`}
+                    className="related-card-link"
+                  >
+                    <div className="related-product-card">
+                      <div className="related-card-img-wrapper">
+                        <img
+                          src={getImageUrl(item?.image)}
+                          alt={item?.name}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = getImageUrl(undefined);
+                          }}
+                        />
                       </div>
-                      <div className="related-status-stock">
-                        <span>Xem Chi Tiết</span>
+                      <div className="related-card-info-content">
+                        <h4>{item.name}</h4>
+                        <div className="related-price-row">
+                          <span className="related-price-current">
+                            {item.price.toLocaleString("vi-VN")}đ
+                          </span>
+                          <span className="related-price-old">
+                            {(item.price * 1.15).toLocaleString("vi-VN")}đ
+                          </span>
+                        </div>
+                        <div className="related-status-stock">
+                          <span>Xem Chi Tiết</span>
+                        </div>
                       </div>
-                      <button
-                        className="btn-quick-cart-circle"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                      >
-                        <AiOutlineShoppingCart />
-                      </button>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                  {/* THÊM NHANH LINH KIỆN TƯƠNG TỰ */}
+                  <button
+                    className="btn-quick-cart-circle"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleAddToCart(false, item.id);
+                    }}
+                  >
+                    <AiOutlineShoppingCart />
+                  </button>
+                </div>
               ))}
             </div>
           </div>

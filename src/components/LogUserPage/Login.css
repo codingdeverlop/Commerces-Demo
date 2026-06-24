@@ -61,7 +61,7 @@
 }
 
 /* Container bọc ngoài (Hỗ trợ grid/flex tốt hơn) */
-.container {
+.containers {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 15px;

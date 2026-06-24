@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+// --- IMPORT SONNER ĐỂ THAY THẾ ALERT MẶC ĐỊNH ---
+import { toast } from "sonner";
 import { IoLogoDesignernews } from "react-icons/io";
 import "./Header.css";
 import { MdOutlineSupportAgent } from "react-icons/md";
@@ -12,13 +14,70 @@ import { IoSearch } from "react-icons/io5";
 import { VscAccount } from "react-icons/vsc";
 
 const Header = (props) => {
+  const navigate = useNavigate();
+
   // Trạng thái lưu tên modal đang mở (null, "HỖ TRỢ TRẢ GÓP", "GIÁ ƯU ĐÃI NHẤT", hoặc "HOTLINE")
   const [activeModal, setActiveModal] = useState(null);
   // Trạng thái mở/đóng menu thả xuống của Tài khoản
   const [showAccountMenu, setShowAccountMenu] = useState(false);
-  // GIẢ ĐỊNH TRẠNG THÁI ĐĂNG NHẬP (Bạn sẽ thay thế bằng logic Auth thực tế của bạn sau này)
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(true); // Giả định tài khoản là Admin
+  // 🌟 THÊM: Trạng thái lưu tổng số lượng sản phẩm trong giỏ hàng
+  const [cartCount, setCartCount] = useState(0);
+
+  // 🌟 ĐỌC DỮ LIỆU ĐĂNG NHẬP THỰC TẾ TỪ LOCALSTORAGE
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const isLoggedIn = !!currentUser;
+  const isAdmin = currentUser?.role === "admin";
+
+  // 🌟 ĐÃ CẬP NHẬT: Hàm đồng bộ số lượng giỏ hàng kết hợp bộ cứu hộ chống lệch kiểu dữ liệu
+  const fetchCartCount = async () => {
+    if (!currentUser) {
+      setCartCount(0);
+      return;
+    }
+    try {
+      // Bước 1: Thử gọi lọc theo cách thông thường qua URL
+      const res = await fetch(
+        `http://localhost:3000/cart?userId=${currentUser.id}`,
+      );
+      let cartData = [];
+
+      if (res.ok) {
+        cartData = await res.json();
+      }
+
+      // 🌟 BỘ CỨU HỘ CHUẨN ĐÉT: Nếu DB có hàng nhưng trả về rỗng do lệch kiểu dữ liệu (String vs Number)
+      if (!cartData || cartData.length === 0) {
+        const resAll = await fetch("http://localhost:3000/cart");
+        if (resAll.ok) {
+          const allCart = await resAll.json();
+          // Tự dùng filter ép cả 2 vế về dạng String để so sánh an toàn
+          cartData = allCart.filter(
+            (item) => String(item.userId) === String(currentUser.id),
+          );
+        }
+      }
+
+      // Cộng dồn tất cả trường quantity của các sản phẩm có trong giỏ hàng
+      const total = cartData.reduce(
+        (sum, item) => sum + (Number(item.quantity) || 1),
+        0,
+      );
+      setCartCount(total);
+    } catch (error) {
+      console.error("Lỗi khi lấy số lượng giỏ hàng trên Header:", error);
+    }
+  };
+
+  // 🌟 THEO DÕI SỰ KIỆN: Chạy khi mount và lắng nghe tín hiệu phát ra từ các nút bấm chi tiết
+  useEffect(() => {
+    fetchCartCount(); // Chạy lần đầu khi vừa vào trang hoặc load lại trang
+
+    window.addEventListener("cartUpdated", fetchCartCount);
+    return () => {
+      window.removeEventListener("cartUpdated", fetchCartCount);
+    };
+  }, [currentUser?.id]);
+
   // Trạng thái lưu thông tin form đăng ký (dành cho Trả góp / Ưu đãi)
   const [formData, setFormData] = useState({
     fullName: "",
@@ -38,6 +97,7 @@ const Header = (props) => {
       document.body.style.overflow = "unset";
     };
   }, [activeModal]);
+
   // Đóng menu tài khoản khi click ra ngoài tự do
   useEffect(() => {
     const handleCloseMenu = () => setShowAccountMenu(false);
@@ -52,7 +112,7 @@ const Header = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert(
+    toast.success(
       `Xác nhận yêu cầu [${activeModal}] thành công! Chúng tôi sẽ liên hệ lại sớm nhất.`,
     );
     setFormData({ fullName: "", email: "", phone: "", message: "" });
@@ -69,10 +129,11 @@ const Header = (props) => {
     return "Nhập lời nhắn của bạn...";
   };
 
-  // Hàm xử lý Đăng xuất giả định
+  // Xử lý Đăng xuất thực tế, xóa sạch LocalStorage và đá về Login
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    alert("Đã đăng xuất thành công!");
+    localStorage.removeItem("currentUser");
+    toast.success("Đã đăng xuất tài khoản thành công!");
+    navigate("/login");
   };
 
   return (
@@ -109,7 +170,6 @@ const Header = (props) => {
                 <FaShippingFast />
                 Miễn Phí Vận Chuyển
               </li>
-              {/* KÍCH HOẠT SỰ KIỆN CLICK CHO HOTLINE */}
               <li
                 className="header-item clickable-item"
                 onClick={() => setActiveModal("HOTLINE")}
@@ -117,21 +177,28 @@ const Header = (props) => {
                 <MdOutlineAddIcCall />
                 HOTLINE
               </li>
-              <li className="header-item">
-                <PiShoppingCartDuotone />
+              <li
+                className="header-item clickable-item cart-item"
+                onClick={() => navigate("/cart")}
+              >
+                <div className="cart-icon">
+                  <PiShoppingCartDuotone />
+                  {/* Hiển thị biến state số lượng thực tế đã được đồng bộ hóa */}
+                  <span className="cart-count">{cartCount}</span>
+                </div>
                 Giỏ Hàng
               </li>
 
-              {/* PHẦN THÊM MỚI: TÀI KHOẢN DROPDOWN */}
+              {/* TÀI KHOẢN DROPDOWN ĐÃ PHÂN QUYỀN THỰC TẾ */}
               <li
                 className="header-item clickable-item account-dropdown-wrapper"
                 onClick={(e) => {
-                  e.stopPropagation(); // Ngăn sự kiện click lan ra ngoài làm đóng menu ngay lập tức
+                  e.stopPropagation();
                   setShowAccountMenu(!showAccountMenu);
                 }}
               >
                 <VscAccount />
-                <span>Tài khoản</span>
+                <span>{isLoggedIn ? currentUser.fullName : "Tài khoản"}</span>
 
                 {/* Menu con hiển thị khi click vào */}
                 {showAccountMenu && (
@@ -142,7 +209,7 @@ const Header = (props) => {
                           <Link to="/login">Đăng nhập</Link>
                         </li>
                         <li>
-                          <Link to="/Register">Đăng ký</Link>
+                          <Link to="/register">Đăng ký</Link>
                         </li>
                       </>
                     ) : (
@@ -206,7 +273,6 @@ const Header = (props) => {
             className="modal-content-custom"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* ... Nội dung modal giữ nguyên như cũ của bạn ... */}
             <div
               className={`modal-header-blue ${activeModal === "HOTLINE" ? "bg-red" : ""}`}
             >

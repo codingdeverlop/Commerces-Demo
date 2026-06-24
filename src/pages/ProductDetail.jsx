@@ -1,39 +1,117 @@
 import { useEffect, useState } from "react";
-import { useParams, Link, Links } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/FooterUser";
 import "./ProductDetail.css";
 import { FaShippingFast, FaAddressCard, FaCcApplePay } from "react-icons/fa";
 import { MdCurrencyExchange } from "react-icons/md";
 import { AiOutlineShoppingCart } from "react-icons/ai";
-// import { TiTickOutline } from "react-icons/ti";
 import { FaGift } from "react-icons/fa6";
 import InstallmentModal from "./InstallmentModal";
 import SpecsModal from "./SpecsModal";
 import Sevicer from "../components/Sevicer/Sevicer";
 import { getImageUrl } from "../utils/imageUtils";
+import { toast } from "sonner";
 
 const ProductDetail = () => {
   const { id } = useParams(); // Lấy ID sản phẩm từ URL
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]); // Danh sách 5 sản phẩm ngẫu nhiên
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSpecsOpen, setIsSpecsOpen] = useState(false);
 
+  // ================= LOGIC XỬ LÝ GIỎ HÀNG CHO CATENOGIES =================
+  const handleAddToCart = async (
+    redirectToCart = false,
+    customProduct = null,
+  ) => {
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+    if (!currentUser) {
+      toast.warning("Vui lòng đăng nhập để mua sản phẩm này!");
+      navigate("/login");
+      return;
+    }
+
+    // Nếu bấm ở sản phẩm tương tự thì lấy customProduct, ngược lại lấy sản phẩm chi tiết hiện tại
+    const targetProduct = customProduct ? customProduct : product;
+    if (!targetProduct) return;
+
+    const targetProductId = String(targetProduct.id);
+    const targetFromTable = "catenogies"; // 🌟 ĐỐNG DẤU CHUẨN BẢNG THEO Ý BẠN
+
+    try {
+      // 1. Fetch danh sách giỏ hàng mới nhất
+      const cartRes = await fetch(
+        `http://localhost:3000/cart?userId=${currentUser.id}`,
+      );
+      let cartItems = [];
+      if (cartRes.ok) cartItems = await cartRes.json();
+
+      // 2. Tìm chính xác mục trùng ID VÀ bắt buộc phải thuộc bảng "catenogies"
+      const existingItem = cartItems.find(
+        (item) =>
+          String(item.productId) === targetProductId &&
+          item.fromTable === targetFromTable,
+      );
+
+      if (existingItem) {
+        // Đã có -> Tăng số lượng lên 1
+        const updateRes = await fetch(
+          `http://localhost:3000/cart/${existingItem.id}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              quantity: Number(existingItem.quantity) + 1,
+            }),
+          },
+        );
+
+        if (updateRes.ok) {
+          toast.success("Đã tăng số lượng sản phẩm trong giỏ hàng!");
+          window.dispatchEvent(new Event("cartUpdated"));
+          if (redirectToCart === true) navigate("/cart");
+        }
+      } else {
+        // Chưa có -> Tạo mới với ID ngẫu nhiên không đụng hàng
+        const newCartItem = {
+          id: `cart-cate-${targetProductId}-${Date.now()}`, // Định danh không lo trùng
+          userId: currentUser.id,
+          productId: targetProductId,
+          quantity: 1,
+          fromTable: targetFromTable, // Lưu đúng nguồn gốc catenogies
+        };
+
+        const postRes = await fetch("http://localhost:3000/cart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newCartItem),
+        });
+
+        if (postRes.ok) {
+          toast.success("Thêm vào giỏ hàng thành công!");
+          window.dispatchEvent(new Event("cartUpdated"));
+          if (redirectToCart === true) navigate("/cart");
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi xử lý giỏ hàng ProductDetail:", error);
+      toast.error("Không thể xử lý giỏ hàng!");
+    }
+  };
+
+  // ================= FETCH ĐÚNG DỮ LIỆU BẢNG CATENOGIES =================
   useEffect(() => {
     setLoading(true);
 
-    // 1. Tìm thông tin chi tiết sản phẩm đang click xem
+    // 🌟 ĐÃ KHÓA CHẶT: Chỉ fetch đúng bảng catenogies theo ID, không gọi lung tung nữa
     fetch(`http://localhost:3000/catenogies/${id}`)
       .then((res) => {
-        if (res.ok) return res.json();
-        return fetch(`http://localhost:3000/LaptopUser/${id}`).then((r) => {
-          if (r.ok) return r.json();
-          return fetch(`http://localhost:3000/products/${id}`).then((p) =>
-            p.json(),
-          );
-        });
+        if (!res.ok) throw new Error("Không tìm thấy sản phẩm trong danh mục!");
+        return res.json();
       })
       .then((data) => {
         if (data && data.name) {
@@ -43,19 +121,15 @@ const ProductDetail = () => {
         }
       })
       .catch((err) => {
-        console.error("Lỗi lấy chi tiết:", err);
+        console.error("Lỗi lấy chi tiết catenogies:", err);
         setProduct(null);
       });
 
-    // 2. Lấy dữ liệu từ bảng catenogies để làm sản phẩm tương tự
-    Promise.all([
-      fetch("http://localhost:3000/catenogies").then((res) =>
-        res.json().catch(() => []),
-      ),
-    ])
-      .then(([catenogiesData]) => {
-        const allProducts = [...catenogiesData];
-        const industryProducts = allProducts.filter(
+    // Lấy dữ liệu làm sản phẩm tương tự (cũng từ bảng catenogies)
+    fetch("http://localhost:3000/catenogies")
+      .then((res) => res.json().catch(() => []))
+      .then((catenogiesData) => {
+        const industryProducts = catenogiesData.filter(
           (item) => String(item.id) !== String(id),
         );
         const shuffled = [...industryProducts].sort(() => 0.5 - Math.random());
@@ -63,7 +137,7 @@ const ProductDetail = () => {
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Lỗi lấy sản phẩm ngẫu nhiên:", err);
+        console.error("Lỗi lấy sản phẩm tương tự:", err);
         setLoading(false);
       });
   }, [id]);
@@ -77,7 +151,6 @@ const ProductDetail = () => {
     <div className="product-detail-page">
       <Header />
 
-      {/* 1. Thanh điều hướng */}
       <div className="bread-bar">
         <div className="inner-bread">
           <Link to="/">
@@ -89,7 +162,6 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      {/* 2. Khung nội dung chi tiết */}
       <main className="product-detail-container">
         <h1 className="product-main-title">{product.name}</h1>
 
@@ -150,14 +222,20 @@ const ProductDetail = () => {
             </div>
 
             <div className="purchase-actions-group">
-              <button className="btn-add-to-cart-big">
-                <strong>THÊM VÀO GIỎ HÀNG</strong>
+              <button
+                className="btn-add-to-cart-big"
+                onClick={() => handleAddToCart(false)}
+              >
+                THÊM VÀO GIỎ HÀNG
                 <span>THÊM VÀO GIỎ ĐỂ CHỌN TIẾP</span>
               </button>
 
               <div className="sub-buy-buttons-row">
-                <button className="btn-buy-now-split">
-                  <strong>MUA NGAY</strong>
+                <button
+                  className="btn-buy-now-split"
+                  onClick={() => handleAddToCart(true)}
+                >
+                  MUA NGAY
                   <span>Giao tận nơi hoặc trực tiếp</span>
                 </button>
 
@@ -208,7 +286,6 @@ const ProductDetail = () => {
         </div>
       </main>
 
-      {/* 3. Khối Mô tả & Thông số chi tiết */}
       <div className="product-description-section">
         <div className="description-layout-container">
           <div className="description-left-content">
@@ -226,7 +303,6 @@ const ProductDetail = () => {
               </p>
 
               <table className="specs-table-detail">
-                {/* Đã ép sát toàn bộ các cặp thẻ <tr><td> liền kề trên cùng 1 dòng nhằm triệt tiêu hoàn toàn khoảng trắng thừa sinh Hydration Error */}
                 <tbody>
                   {product.name &&
                   (product.name.includes("I5 12400F") ||
@@ -325,7 +401,6 @@ const ProductDetail = () => {
                       <th>BẢO HÀNH</th>
                     </tr>
                   </thead>
-                  {/* Ép sát dòng dữ liệu bảng phụ */}
                   <tbody>
                     {product.name &&
                     (product.name.includes("I5 12400F") ||
@@ -372,54 +447,59 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      {/* 4. Khối SẢN PHẨM TƯƠNG TỰ */}
       {relatedProducts.length > 0 && (
         <section className="related-products-section">
           <div className="related-inner-container">
             <h2 className="related-section-title">SẢN PHẨM TƯƠNG TỰ</h2>
             <div className="related-products-grid">
               {relatedProducts.map((item, index) => (
-                <Link
-                  to={`/product/${item.id}`}
+                <div
                   key={`${item.id}-${index}`}
-                  className="related-card-link"
+                  className="related-card-link-wrapper"
+                  style={{ position: "relative" }}
                 >
-                  <div className="related-product-card">
-                    <div className="related-card-img-wrapper">
-                      <img
-                        src={getImageUrl(item?.image)}
-                        alt={item?.name}
-                        onError={(e) => {
-                          e.currentTarget.onerror = null;
-                          e.currentTarget.src = getImageUrl(undefined);
-                        }}
-                      />
-                    </div>
-                    <div className="related-card-info-content">
-                      <h4>{item.name}</h4>
-                      <div className="related-price-row">
-                        <span className="related-price-current">
-                          {item.price.toLocaleString("vi-VN")}đ
-                        </span>
-                        <span className="related-price-old">
-                          {(item.price * 1.15).toLocaleString("vi-VN")}đ
-                        </span>
+                  <Link
+                    to={`/product/${item.id}`}
+                    className="related-card-link"
+                  >
+                    <div className="related-product-card">
+                      <div className="related-card-img-wrapper">
+                        <img
+                          src={getImageUrl(item?.image)}
+                          alt={item?.name}
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = getImageUrl(undefined);
+                          }}
+                        />
                       </div>
-                      <div className="related-status-stock">
-                        <span>Xem Chi Tiết</span>
+                      <div className="related-card-info-content">
+                        <h4>{item.name}</h4>
+                        <div className="related-price-row">
+                          <span className="related-price-current">
+                            {item.price.toLocaleString("vi-VN")}đ
+                          </span>
+                          <span className="related-price-old">
+                            {(item.price * 1.15).toLocaleString("vi-VN")}đ
+                          </span>
+                        </div>
+                        <div className="related-status-stock">
+                          <span>Xem Chi Tiết</span>
+                        </div>
                       </div>
-                      <button
-                        className="btn-quick-cart-circle"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                      >
-                        <AiOutlineShoppingCart />
-                      </button>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                  <button
+                    className="btn-quick-cart-circle"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleAddToCart(false, item); // Thêm nhanh sản phẩm tương tự vào giỏ catenogies
+                    }}
+                  >
+                    <AiOutlineShoppingCart />
+                  </button>
+                </div>
               ))}
             </div>
           </div>

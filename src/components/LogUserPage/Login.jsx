@@ -20,6 +20,8 @@ import {
 } from "react-icons/fa";
 import Sevicer from "../Sevicer/Sevicer";
 
+const API_URL = "http://localhost:3000";
+
 const Login = () => {
   const [account, setAccount] = useState("");
   const [password, setPassword] = useState("");
@@ -31,7 +33,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    //  1. Sonner bắn cảnh báo khi bỏ trống ô nhập liệu
+    // 1. Sonner bắn cảnh báo khi bỏ trống ô nhập liệu
     if (!account.trim() || !password.trim()) {
       toast.warning("Vui lòng nhập đầy đủ thông tin đăng nhập!");
       return;
@@ -40,7 +42,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3000/users");
+      const response = await fetch(`${API_URL}/users`);
 
       if (!response.ok) {
         throw new Error(`Lỗi kết nối Server! Mã lỗi: ${response.status}`);
@@ -49,11 +51,21 @@ const Login = () => {
       const users = await response.json();
 
       // Kiểm tra tìm kiếm tài khoản
-      const foundUser = users.find(
-        (user) =>
-          (user.email === account || user.phone === account) &&
-          user.password === password,
-      );
+      // Kiểm tra tìm kiếm tài khoản (Không phân biệt chữ hoa / chữ thường ở Email)
+      const foundUser = users.find((user) => {
+        const matchEmail =
+          user.email && account
+            ? user.email.toLowerCase() === account.trim().toLowerCase()
+            : false;
+        const matchPhone =
+          user.phone && account ? user.phone.trim() === account.trim() : false;
+        const matchPassword =
+          user.password && password
+            ? String(user.password).trim() === password.trim()
+            : false;
+
+        return (matchEmail || matchPhone) && matchPassword;
+      });
 
       if (foundUser) {
         // 🌟 2. Sonner bắn lỗi khi tài khoản bị khóa
@@ -68,7 +80,6 @@ const Login = () => {
         // 🌟 3. Sonner bắn thông báo thành công theo từng quyền hạn
         if (foundUser.role === "admin") {
           toast.success(" Đăng nhập thành công với quyền Admin!");
-          // Đợi hiệu ứng toast chạy một xíu rồi chuyển trang
           setTimeout(() => navigate("/admin"), 1000);
         } else {
           toast.success(`Chào mừng ${foundUser.fullName} quay trở lại!`);
@@ -78,7 +89,7 @@ const Login = () => {
         // 🌟 4. Sonner bắn lỗi sai thông tin
         toast.error("Mật khẩu hoặc tài khoản không chính xác!");
         setPassword("");
-        setEmail("");
+        setAccount(""); // ✅ ĐÃ SỬA THÀNH setAccount thay vì setEmail bậy bạ cũ!
       }
     } catch (error) {
       console.error("Chi tiết lỗi API đăng nhập:", error);
@@ -95,7 +106,7 @@ const Login = () => {
     <>
       <Header />
       <div className="login-page">
-        <div className="container">
+        <div className="containers">
           <div className="breadcrumb">
             <Link to="/">
               <span>Trang chủ </span>

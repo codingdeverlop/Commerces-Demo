@@ -611,44 +611,15 @@
   "users": [
     {
       "id": "1",
-      "fullName": "Admini",
-      "username": "admin",
-      "email": "admin@gmail.com",
-      "password": "123456",
+      "fullName": "Admin7709",
+      "email": "Admin7709@gmail.com",
       "phone": "0911108133",
+      "password": "123456789@",
       "role": "admin",
-      "status": "active",
-      "createdAt": "2026-06-21T10:00:00"
-    },
-    {
-      "id": "2",
-      "fullName": "Nguyễn Văn A",
-      "username": "nguyenvana",
-      "email": "vana@gmail.com",
-      "password": "123456",
-      "phone": "0987654321",
-      "role": "user",
-      "status": "active",
-      "createdAt": "2026-06-21T10:30:00"
-    },
-    {
-      "id": "3",
-      "fullName": "nguyên van b",
-      "email": "nguyenvan@gmail.com",
-      "phone": "0999992834",
-      "password": "123456789",
-      "role": "user",
-      "status": "active"
-    },
-    {
-      "id": "4",
-      "fullName": "HoangHai",
-      "email": "hoanghai@gmail.com",
-      "phone": "0911221212",
-      "password": "123456789",
-      "role": "user",
       "status": "active"
     }
   ],
+  "cart": [],
+  "orders": [],
   "$schema": "./node_modules/json-server/schema.json"
 }

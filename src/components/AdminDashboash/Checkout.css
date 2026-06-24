@@ -1,0 +1,256 @@
+/* =========================
+   GLOBAL
+========================= */
+body {
+  background: #f5f6fa;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.product-detail-pages {
+  background: #f5f6fa;
+  min-height: 100vh;
+}
+
+/* =========================
+   BREADCRUMB
+========================= */
+.inner-breads {
+  max-width: 1200px;
+  margin: 16px auto;
+  padding: 0 16px;
+  font-size: 14px;
+  color: #777;
+  display: flex;
+  gap: 8px;
+}
+
+.inner-breads a span {
+  color: #333;
+  transition: 0.2s;
+}
+
+.inner-breads a span:hover {
+  color: #ff4d2d;
+}
+
+/* =========================
+   CONTAINER
+========================= */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px 120px; /* chừa chỗ sticky bar */
+}
+
+/* =========================
+   FORM WRAPPER
+========================= */
+.checkout-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* =========================
+   CARD STYLE (CHUNG)
+========================= */
+.checkout-left {
+  background: #fff;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+/* =========================
+   SECTION TITLE
+========================= */
+.checkout-section-title,
+.checkout-section-title-payment {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: #222;
+}
+
+/* =========================
+   INPUT STYLE
+========================= */
+.checkout-group {
+  margin-bottom: 14px;
+}
+
+.checkout-group label {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.checkout-group input,
+.checkout-group textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  outline: none;
+  font-size: 14px;
+  transition: 0.2s;
+  background: #fff;
+}
+
+.checkout-group input:focus,
+.checkout-group textarea:focus {
+  border-color: #ff4d2d;
+  box-shadow: 0 0 0 3px rgba(255, 77, 45, 0.12);
+}
+
+/* =========================
+   PAYMENT BOX
+========================= */
+.payment-methods {
+  margin-top: 10px;
+}
+
+.payment-method-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  cursor: pointer;
+  background: #fafafa;
+  transition: 0.2s;
+}
+
+.payment-method-item:hover {
+  border-color: #ff4d2d;
+  background: #fff7f5;
+}
+
+.method-details strong {
+  font-size: 14px;
+}
+
+.method-details p {
+  font-size: 12px;
+  color: #777;
+  margin-top: 4px;
+}
+
+/* =========================
+   PRODUCT LIST
+========================= */
+.product-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.product-item img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.product-info {
+  flex: 1;
+}
+
+.product-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.product-qty {
+  font-size: 12px;
+  color: #777;
+}
+
+.product-price {
+  font-weight: 700;
+  color: #ff4d2d;
+}
+
+/* =========================
+   SUMMARY BOX
+========================= */
+.summary-box {
+  margin-top: 10px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin: 8px 0;
+  color: #444;
+}
+
+.summary-total {
+  font-size: 18px;
+  font-weight: 800;
+  color: #ff4d2d;
+  margin-top: 10px;
+}
+
+/* =========================
+   STICKY BOTTOM BAR
+========================= */
+
+.btn-confirm-checkout {
+  margin-top: 18px;
+  margin-bottom: 20px;
+  width: 100%;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.25);
+  letter-spacing: 0.3px;
+}
+
+/* hover */
+.btn-confirm-checkout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.35);
+}
+
+/* active click */
+.btn-confirm-checkout:active {
+  transform: translateY(0);
+  box-shadow: 0 5px 12px rgba(37, 99, 235, 0.2);
+}
+
+/* disabled state */
+.btn-confirm-checkout:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+  opacity: 0.7;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+  .checkout-left {
+    padding: 16px;
+  }
+
+  .sticky-bar {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
