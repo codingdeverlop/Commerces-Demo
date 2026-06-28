@@ -8,10 +8,8 @@ import {
 } from "react-icons/md";
 
 const Sevicer = () => {
-  // Thay đổi: Lưu tiêu đề dịch vụ đang chọn (null tức là đang đóng modal)
   const [activeService, setActiveService] = useState(null);
 
-  // Trạng thái lưu thông tin form
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -19,7 +17,6 @@ const Sevicer = () => {
     message: "",
   });
 
-  // Mảng danh sách dịch vụ (đã thêm placeholder riêng cho từng thằng)
   const services = [
     {
       icon: <MdLocalShipping />,
@@ -48,57 +45,45 @@ const Sevicer = () => {
     },
   ];
 
-  // Xử lý khi thay đổi dữ liệu trong form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Xử lý khi bấm nút Xác nhận gửi form
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Thay đổi: Gửi kèm tên dịch vụ khách hàng đang chọn
     console.log(`Thông tin khách hàng đăng ký [${activeService}]:`, formData);
     alert(
       `Xác nhận yêu cầu [${activeService}] thành công! Chúng tôi sẽ liên hệ lại sớm nhất.`,
     );
-
-    // Reset form và đóng modal
     setFormData({ fullName: "", email: "", phone: "", message: "" });
     setActiveService(null);
   };
 
-  // Khóa hoặc mở cuộn trang dựa trên activeService
   useEffect(() => {
     if (activeService) {
-      document.body.style.overflow = "hidden"; // Khóa cuộn trang
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = "unset"; // Mở cuộn trang bình thường
+      document.body.style.overflow = "unset";
     }
-
     return () => {
       document.body.style.overflow = "unset";
     };
   }, [activeService]);
 
-  // Tìm đối tượng dịch vụ hiện tại để lấy placeholder tương ứng
   const currentService = services.find((s) => s.title === activeService);
 
   return (
-    <section className="sevicer-section">
-      <div className="service-container">
+    <section className="svc-wrapper">
+      <div className="svc-grid">
         {services.map((ser, index) => (
           <div
-            // Thay đổi: Tất cả dịch vụ giờ đều có class 'clickable' và nhấn được
-            className="service-item clickable"
+            className="svc-card svc-card--active"
             key={index}
             onClick={() => setActiveService(ser.title)}
           >
-            <div className="service-icon">{ser.icon}</div>
-            <div className="service-info">
+            <div className="svc-card__icon">{ser.icon}</div>
+            <div className="svc-card__body">
               <h5>{ser.title}</h5>
               <p>{ser.desc}</p>
             </div>
@@ -106,25 +91,23 @@ const Sevicer = () => {
         ))}
       </div>
 
-      {/* Cấu trúc của MODAL POPUP DÙNG CHUNG */}
       {activeService && (
-        <div className="modal-overlay" onClick={() => setActiveService(null)}>
-          <div className="modal-contents" onClick={(e) => e.stopPropagation()}>
+        <div className="dialog-backdrop" onClick={() => setActiveService(null)}>
+          <div className="dialog-box" onClick={(e) => e.stopPropagation()}>
             <button
-              className="modal-close-btn"
+              className="dialog__close"
               onClick={() => setActiveService(null)}
             >
               &times;
             </button>
 
-            {/* Thay đổi: Tiêu đề tự động nhảy theo dịch vụ được chọn */}
             <h3>{activeService}</h3>
-            <p className="modal-subtitle">
+            <p className="dialog__subtitle">
               Vui Lòng Nhập Thông Tin Của Bạn Để Được Ưu Đãi Nhé
             </p>
 
             <form onSubmit={handleSubmit}>
-              <div className="form-group">
+              <div className="field-group">
                 <label>Họ và tên *</label>
                 <input
                   type="text"
@@ -136,7 +119,7 @@ const Sevicer = () => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="field-group">
                 <label>Email *</label>
                 <input
                   type="email"
@@ -148,7 +131,7 @@ const Sevicer = () => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="field-group">
                 <label>Số điện thoại *</label>
                 <input
                   type="tel"
@@ -160,21 +143,20 @@ const Sevicer = () => {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="field-group">
                 <label>Lời nhắn / Chi tiết yêu cầu</label>
                 <textarea
                   name="message"
                   value={formData.message}
                   onChange={handleInputChange}
                   rows="3"
-                  // Thay đổi: Placeholder tự động đổi thông minh theo dịch vụ
                   placeholder={
                     currentService?.placeholder || "Nhập lời nhắn của bạn..."
                   }
                 ></textarea>
               </div>
 
-              <button type="submit" className="modal-submit-btn">
+              <button type="submit" className="dialog__submit">
                 Xác nhận
               </button>
             </form>

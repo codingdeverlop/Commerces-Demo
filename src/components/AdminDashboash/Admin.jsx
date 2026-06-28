@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
+import { BiSolidDiscount } from "react-icons/bi";
 import "./Admin.css";
 import {
   FaTachometerAlt,
@@ -42,20 +43,24 @@ const Admin = () => {
         <nav className="sidebar-menu">
           <Link to="/admin/products" className={isActive("products")}>
             <FaBoxOpen />
-            <span>Sản phẩm</span>
+            <span>Sản Phẩm</span>
           </Link>
 
           <Link to="/admin/orders" className={isActive("orders")}>
             <FaShoppingCart />
-            <span>Đơn hàng</span>
+            <span>Đơn Hàng</span>
           </Link>
           <Link to="/admin/users" className={isActive("users")}>
             <FaUsers />
-            <span>Người dùng</span>
+            <span>Người Dùng</span>
           </Link>
           <Link to="/admin/statistics" className={isActive("statistics")}>
             <FaChartBar />
-            <span>Thống kê</span>
+            <span>Thống Kê</span>
+          </Link>
+          <Link to="/admin/discount" className={isActive("discount")}>
+            <BiSolidDiscount />
+            <span>Giảm Giá</span>
           </Link>
         </nav>
       </aside>

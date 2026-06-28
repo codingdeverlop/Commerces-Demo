@@ -100,7 +100,7 @@ const Profile = () => {
               <div className="profile-menu">
                 <button
                   className="profile-menu-btn"
-                  onClick={() => navigate("/profile/edit")}
+                  onClick={() => navigate("/edit")}
                 >
                   <FaEdit />
                   <span>Chỉnh sửa thông tin</span>
@@ -121,11 +121,6 @@ const Profile = () => {
                     <button
                       className="profile-menu-btn admin-btn"
                       onClick={() => navigate("/admin/products")}
-                      style={{
-                        color: "#e53935",
-                        fontWeight: "bold",
-                        borderLeft: "4px solid #e53935",
-                      }}
                     >
                       <FaBoxes />
                       <span>Quản lý sản phẩm</span>
@@ -134,11 +129,6 @@ const Profile = () => {
                     <button
                       className="profile-menu-btn admin-btn"
                       onClick={() => navigate("/admin/orders")}
-                      style={{
-                        color: "#e53935",
-                        fontWeight: "bold",
-                        borderLeft: "4px solid #e53935",
-                      }}
                     >
                       <FaFileInvoiceDollar />
                       <span>Quản lý đơn hàng</span>
@@ -263,24 +253,6 @@ const Profile = () => {
                     <p>{formatDate(currentUser.createdAt)}</p>
                   </div>
                 </div>
-              </div>
-
-              <div className="profile-bottom-actions">
-                <button
-                  className="primary-btn"
-                  onClick={() => navigate("/profile/edit")}
-                >
-                  <FaEdit />
-                  Chỉnh sửa thông tin
-                </button>
-
-                <button
-                  className="secondary-btn"
-                  onClick={() => navigate("/change-password")}
-                >
-                  <FaLock />
-                  Đổi mật khẩu
-                </button>
               </div>
             </div>
           </div>

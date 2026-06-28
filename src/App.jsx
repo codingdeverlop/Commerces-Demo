@@ -22,6 +22,12 @@ import AdminOrders from "./components/AdminDashboash/AdminOrders";
 // 🌟 Hãy kiểm tra chắc chắn đường dẫn này trỏ đúng đến file Cart.jsx thông minh chúng ta vừa viết
 import Cart from "./pages/CartUser/Cart";
 import Statistics from "./components/AdminDashboash/Statistics";
+import Discount from "./components/AdminDashboash/DiscountUser";
+import EditProfile from "./components/AdminDashboash/EditProfile";
+import News from "./components/Sidebar/News";
+import NewsDetail from "./components/Sidebar/NewsDetail";
+import CategoryPage from "./components/Catenogy/CategoryPage";
+import LaptopMenu from "./components/Newlaptop/LaptopMenu";
 
 // 🛡️ BỘ BẢO VỆ ROUTE ADMIN
 const AdminProtectedRoute = ({ children }) => {
@@ -46,15 +52,22 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/Profile" element={<Profile />} />
+        <Route path="/Profile" element={<Profile />} />
+        <Route path="/edit" element={<EditProfile />} />
 
         {/* Tuyến đường sản phẩm chi tiết */}
+        <Route path="/laptop/:category" element={<LaptopMenu />} />
+        <Route path="/category/:category" element={<CategoryPage />} />
+        <Route path="/news/:id" element={<NewsDetail />} />
+        <Route path="/news" element={<News />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/page/:id" element={<ProductPage />} />
         <Route path="/menu/:id" element={<ProductMenu />} />
-        <Route path="/laptop/:id" element={<LaptopPage />} />
+        <Route path="/laptop-detail/:id" element={<LaptopPage />} />
         <Route path="/component/:id" element={<ComponentPage />} />
 
         {/* Giỏ hàng & Thanh toán */}
+        <Route path="/admin/discount" element={<Discount />} />
         <Route path="/admin/statistics" element={<Statistics />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
@@ -98,6 +111,14 @@ function App() {
           element={
             <AdminProtectedRoute>
               <statistics />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/discount"
+          element={
+            <AdminProtectedRoute>
+              <Admin />
             </AdminProtectedRoute>
           }
         />

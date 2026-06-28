@@ -32,9 +32,31 @@
     },
     {
       "id": "6",
-      "name": "Thế Giới Marvier",
+      "name": "Thế Giới Moto",
       "price": 400000,
-      "image": "/images/logo9.jpg"
+      "image": "/images/moto01.jpg",
+      "deleted": false
+    },
+    {
+      "id": 7,
+      "name": "Thế Giới Anime",
+      "price": 200000,
+      "image": "/images/AN01.jpg",
+      "deleted": false
+    },
+    {
+      "id": 8,
+      "name": "Thế Giới Ôtô",
+      "price": 500000,
+      "image": "/images/oto1.jpg",
+      "deleted": false
+    },
+    {
+      "id": 9,
+      "name": "Thế Giới Tốc Độ",
+      "price": 7000000,
+      "image": "/images/moto02.webp",
+      "deleted": false
     }
   ],
   "catenogies": [
@@ -236,6 +258,62 @@
       "name": "Laptop HP 15s-fq1017TU 8VY69PA (Silver)",
       "price": 20000000,
       "image": "/images/pr8.webp"
+    },
+    {
+      "id": 9,
+      "name": "Điện Thoại iPhone 16 PRO MAX 1TB Titan Đen Chính Hãng VNA",
+      "price": 2000000,
+      "image": "/images/Ip01.jpg",
+      "deleted": false
+    },
+    {
+      "id": 10,
+      "name": "Laptop Apple MacBook Neo 13 inch A18 Pro Hồng Phớt 6CPU/5GPU/8GB/256GB - MHFH4SA/A",
+      "price": 20000000,
+      "image": "/images/lap01.png",
+      "deleted": false
+    },
+    {
+      "id": 11,
+      "name": "Laptop Apple MacBook Air MDH84SA/A MBA 13.6 M5/10C/10GPU/16G/1T/35W/Silver",
+      "price": 5000000,
+      "image": "/images/lap02.jpg",
+      "deleted": false
+    },
+    {
+      "id": 12,
+      "name": "iPhone 16 Pro Max Giá ưu đãi | Hỗ trợ trả góp 0% lãi suất",
+      "price": 30000000,
+      "image": "/images/Ip02.jpg",
+      "deleted": false
+    },
+    {
+      "id": 13,
+      "name": "iPhone 17 Pro Max Quốc tế giá tốt tại Đà Nẵng | Trả góp 0% lãi suất",
+      "price": 3999999,
+      "image": "/images/Ip03.jpg",
+      "deleted": false
+    },
+    {
+      "id": 14,
+      "name": "Điện thoại Iphone 17 Pro - Chính hãng giá tốt tại Đà Nẵng",
+      "price": 40000000,
+      "image": "/images/Ip04.jpg",
+      "deleted": false
+    },
+    {
+      "id": 15,
+      "name": "iPhone 12 128GB Giá rẻ tại Hà Nội | Hỗ trợ góp 0đ",
+      "price": 7000000,
+      "image": "/images/Ip05.jpg",
+      "deleted": false
+    },
+    {
+      "id": 16,
+      "name": "iPhone 13 128GB (New VN/A)",
+      "price": 20000000,
+      "image": "/images/Ip06.jpg",
+      "deleted": false
     }
   ],
   "ProductMenus": [
@@ -606,6 +684,13 @@
           }
         ]
       }
+    },
+    {
+      "id": 7,
+      "name": "Điện Thoại iPhone 16 PRO MAX 1TB Titan Đen Chính Hãng VNA",
+      "price": 2000000,
+      "image": "/images/Ip01.jpg",
+      "deleted": false
     }
   ],
   "users": [
@@ -616,7 +701,8 @@
       "phone": "0911108133",
       "password": "123456789@",
       "role": "admin",
-      "status": "active"
+      "status": "active",
+      "address": "hà đông - hà nội "
     },
     {
       "id": "1782406441185",
@@ -626,36 +712,205 @@
       "password": "123456",
       "role": "user",
       "status": "active"
-    }
-  ],
-  "cart": [],
-  "orders": [
+    },
     {
-      "orderCode": "DH-20260626-144238",
-      "userId": "1782406441185",
-      "fullName": "Hoang Hai",
-      "phone": "0111111111",
-      "email": "Hoanghai@gmail.com",
-      "address": "aaaaaaa",
-      "note": "",
-      "paymentMethod": "bank",
-      "status": "pending",
-      "totalAmount": 32990000,
-      "createdAt": "2026-06-26T07:42:38.892Z",
-      "products": [
-        {
-          "productId": "2",
-          "name": "PC GAMING RYZEN 7-RTX 5070 (Ryzen 7 9700X, RTX 5070 12GB, RAM 32GB DDR5, SSD 1TB)",
-          "image": "/images/pr2.webp",
-          "quantity": 1,
-          "unitPrice": 32990000,
-          "subtotal": 32990000,
-          "fromTable": "ProductMenus"
-        }
-      ],
-      "id": 1
+      "id": "1782469191189",
+      "fullName": "abcxyz",
+      "email": "hoanghai@gmail.com",
+      "phone": "900000000",
+      "password": "123456789",
+      "role": "user",
+      "status": "active"
+    },
+    {
+      "id": "1782469541513",
+      "fullName": "yyyyyyy",
+      "email": "admin@gmail.coml",
+      "phone": "123456778",
+      "password": "123456",
+      "role": "user",
+      "status": "active"
     }
   ],
-  "reviews": [],
+  "cart": [
+    {
+      "id": "cart-cate-2-1782660154687",
+      "userId": "1",
+      "productId": "2",
+      "quantity": 3,
+      "fromTable": "catenogies"
+    }
+  ],
+  "orders": [],
+  "reviews": [
+    {
+      "productId": "2",
+      "collection": "catenogies",
+      "userId": "1",
+      "userName": "Admin7709",
+      "rating": 5,
+      "comment": "rrrrrrrrrrrrr",
+      "createdAt": "2026-06-26T10:18:13.897Z",
+      "id": "1782469093897"
+    }
+  ],
+  "news": [
+    {
+      "id": 1,
+      "title": "Intel Core i9-15900K ra mắt: Hiệu năng đột phá cho dàn PC gaming 2025",
+      "desc": "Thế hệ CPU mới nhất từ Intel hứa hẹn tăng 30% hiệu năng so với thế hệ trước, tích hợp AI acceleration trực tiếp trên chip.",
+      "category": "Công nghệ",
+      "categorySlug": "tech",
+      "color": "blue",
+      "date": "2025-06-20",
+      "views": 2400,
+      "thumbnail": "",
+      "content": "Intel vừa chính thức ra mắt dòng CPU thế hệ 15 với Core i9-15900K dẫn đầu. Chip sử dụng kiến trúc Lion Cove mới, tăng 30% IPC so với Raptor Lake. Đặc biệt, i9-15900K tích hợp NPU xử lý AI trực tiếp trên die, hỗ trợ các tác vụ AI như upscaling, noise cancellation mà không cần GPU. Giá dự kiến từ 12.500.000đ khi ra mắt tại Việt Nam.",
+      "image": "/images/logo11.jpg"
+    },
+    {
+      "id": 2,
+      "title": "Review ASUS ROG Zephyrus G16 2025: Mỏng nhẹ nhưng sức mạnh vượt trội",
+      "desc": "Laptop gaming mỏng nhất phân khúc cao cấp với RTX 4080, màn hình OLED 240Hz cực đẹp, pin trâu 10 tiếng.",
+      "category": "Đánh giá",
+      "categorySlug": "review",
+      "color": "green",
+      "date": "2025-06-18",
+      "views": 5100,
+      "thumbnail": "",
+      "content": "ASUS ROG Zephyrus G16 2025 gây ấn tượng ngay từ cái nhìn đầu tiên với thiết kế chỉ 18.9mm, nặng 1.85kg nhưng trang bị RTX 4080 Laptop GPU và Core i9-14900HX. Màn hình OLED 16 inch 240Hz, độ phủ 100% DCI-P3 cho màu sắc cực kỳ sống động. Pin 90Wh thực dụng được khoảng 8-10 tiếng duyệt web. Giá từ 55.000.000đ.",
+      "image": "/images/logo10.jpg"
+    },
+    {
+      "id": 3,
+      "title": "Sale mùa hè 2025: Giảm đến 40% toàn bộ linh kiện PC và Laptop gaming",
+      "desc": "Chương trình khuyến mãi lớn nhất năm với hàng trăm sản phẩm được giảm giá sâu từ 20–40%, kéo dài đến hết tháng 7.",
+      "category": "Khuyến mãi",
+      "categorySlug": "promo",
+      "color": "amber",
+      "date": "2025-06-15",
+      "views": 8700,
+      "thumbnail": "",
+      "content": "Nhân dịp mùa hè 2025, cửa hàng triển khai chương trình Sale lớn nhất năm với hơn 500 sản phẩm tham gia. GPU giảm đến 35%, RAM DDR5 giảm 25%, SSD NVMe giảm 30%. Đặc biệt, khách hàng mua PC Gaming trọn bộ được tặng thêm màn hình 27 inch trị giá 4.500.000đ. Chương trình kéo dài đến 31/07/2025.",
+      "image": "/images/logo8.jpg"
+    },
+    {
+      "id": 4,
+      "title": "Hướng dẫn chọn RAM DDR5 cho PC gaming 2025: Tốc độ nào là đủ?",
+      "desc": "Phân tích chi tiết các mức RAM từ 5600MHz đến 7200MHz và tác động thực tế đến hiệu năng game, render và đa nhiệm.",
+      "category": "Hướng dẫn",
+      "categorySlug": "guide",
+      "color": "purple",
+      "date": "2025-06-12",
+      "views": 3200,
+      "thumbnail": "",
+      "content": "DDR5 đang trở thành tiêu chuẩn mới cho PC gaming cao cấp. Bài viết phân tích benchmark thực tế trên 6 tựa game AAA với RAM ở các mức 5600MHz, 6000MHz, 6400MHz và 7200MHz. Kết quả cho thấy 6000MHz CL30 là điểm ngọt nhất về giá-hiệu năng, tăng 8-12% FPS so với 5600MHz mà chênh lệch giá chỉ 300.000–500.000đ. 7200MHz mang lại lợi ích không đáng kể cho gaming.",
+      "image": "/images/logo6.jpg"
+    },
+    {
+      "id": 5,
+      "title": "Computex 2025: Những sản phẩm công nghệ nổi bật nhất năm",
+      "desc": "Tổng hợp toàn bộ GPU, CPU, màn hình và phụ kiện đình đám được ra mắt tại Computex Đài Bắc 2025.",
+      "category": "Sự kiện",
+      "categorySlug": "event",
+      "color": "coral",
+      "date": "2025-06-10",
+      "views": 6300,
+      "thumbnail": "",
+      "content": "Computex 2025 tại Đài Bắc quy tụ hơn 1.600 thương hiệu công nghệ. Điểm nhấn là NVIDIA RTX 5000 series, AMD Ryzen 9000 và Intel Arrow Lake-S. ASUS, MSI, Gigabyte đồng loạt ra mắt bo mạch chủ Z890 và X870E. Samsung giới thiệu RAM DDR5-8000 đầu tiên thế giới. LG trình diễn màn hình OLED 27 inch 480Hz mỏng 3mm gây sốt cộng đồng.",
+      "image": "/images/logo4.png"
+    },
+    {
+      "id": 6,
+      "title": "NVIDIA RTX 5090 lộ diện benchmark: Mạnh gấp đôi RTX 4090",
+      "desc": "Những thông số kỹ thuật đầu tiên của RTX 5090 được rò rỉ, hứa hẹn cuộc cách mạng đồ họa với 32GB GDDR7.",
+      "category": "Công nghệ",
+      "categorySlug": "tech",
+      "color": "blue",
+      "date": "2025-06-08",
+      "views": 11200,
+      "thumbnail": "",
+      "content": "Các benchmark rò rỉ từ nguồn tin uy tín cho thấy RTX 5090 dựa trên kiến trúc Blackwell với 192 SM, 24.576 CUDA cores và 32GB GDDR7 băng thông 1.8TB/s. Điểm 3DMark Time Spy Extreme đạt 35.000 — gấp 2.1 lần RTX 4090. Ray tracing cải thiện 2.5x nhờ thế hệ RT core mới. Giá dự kiến khoảng 1.999 USD, ra mắt quý 4/2025.",
+      "image": "/images/logo12.jpg"
+    },
+    {
+      "id": 7,
+      "title": "Top 5 mainboard Z890 tốt nhất cho Intel Core i9 thế hệ 15",
+      "desc": "So sánh chi tiết 5 mainboard Z890 từ ASUS, MSI, Gigabyte và ASRock — giúp bạn chọn nền tảng hoàn hảo cho build mới.",
+      "category": "Đánh giá",
+      "categorySlug": "review",
+      "color": "green",
+      "date": "2025-06-05",
+      "views": 4100,
+      "thumbnail": "",
+      "content": "Z890 mang đến PCIe 5.0 x16 cho GPU, PCIe 5.0 x4 cho SSD và hỗ trợ DDR5-8000+. ASUS ROG Maximus Z890 Apex dẫn đầu về ép xung với VRM 24+1 pha 110A. MSI MEG Z890 ACE cân bằng tính năng và giá tốt nhất ở mức 12.000.000đ. Gigabyte Z890 Aorus Master nổi bật với hệ thống tản nhiệt VRM xuất sắc. ASRock Z890 Taichi là lựa chọn giá tốt nhất phân khúc cao cấp.",
+      "image": "/images/logo2.png"
+    },
+    {
+      "id": 8,
+      "title": "Khuyến mãi tri ân khách hàng: Mua PC tặng ngay phụ kiện 5 triệu",
+      "desc": "Nhân kỷ niệm 10 năm thành lập, cửa hàng tặng bộ phụ kiện gaming gồm chuột, bàn phím, tai nghe cho mọi đơn PC từ 30 triệu.",
+      "category": "Khuyến mãi",
+      "categorySlug": "promo",
+      "color": "amber",
+      "date": "2025-06-01",
+      "views": 7800,
+      "thumbnail": "",
+      "content": "Nhân dịp kỷ niệm 10 năm, cửa hàng triển khai chương trình tri ân đặc biệt. Khách mua PC Gaming từ 30.000.000đ được tặng bộ phụ kiện gồm chuột gaming Logitech G Pro X Superlight 2, bàn phím cơ ASUS ROG Strix Scope và tai nghe SteelSeries Arctis Nova Pro — tổng giá trị 5.200.000đ. Chương trình áp dụng đến hết 30/06/2025, số lượng có hạn.",
+      "image": "/images/logo1.jpg"
+    },
+    {
+      "id": 9,
+      "title": "Hướng dẫn build PC gaming dưới 20 triệu: Mạnh nhất tầm giá 2025",
+      "desc": "Tư vấn cấu hình PC gaming hoàn chỉnh dưới 20 triệu đồng với hiệu năng tối ưu cho game AAA ở độ phân giải 1080p.",
+      "category": "Hướng dẫn",
+      "categorySlug": "guide",
+      "color": "purple",
+      "date": "2025-05-28",
+      "views": 9500,
+      "thumbnail": "",
+      "content": "Với ngân sách 20 triệu, bạn có thể build PC gaming đủ sức chơi tất cả game AAA 2025 ở 1080p Ultra 60fps+. Gợi ý cấu hình: AMD Ryzen 5 7600 (3.200.000đ) + Mainboard B650 (2.800.000đ) + RAM 16GB DDR5-6000 (1.200.000đ) + RTX 4060 Ti (8.500.000đ) + SSD 1TB NVMe (900.000đ) + Nguồn 650W 80+ Gold (1.200.000đ) + Case mid-tower (800.000đ). Tổng: 18.600.000đ, còn dư cho tản nhiệt khí cao cấp.",
+      "image": "/images/logo2.png"
+    },
+    {
+      "id": 10,
+      "title": "Workshop build PC miễn phí tháng 7: Học kỹ năng lắp ráp từ chuyên gia",
+      "desc": "Sự kiện workshop thực hành lắp ráp PC miễn phí dành cho người mới, giới hạn 30 người mỗi buổi, đăng ký sớm để giữ chỗ.",
+      "category": "Sự kiện",
+      "categorySlug": "event",
+      "color": "coral",
+      "date": "2025-05-25",
+      "views": 3900,
+      "thumbnail": "",
+      "content": "Cửa hàng tổ chức chuỗi workshop 'Build PC từ A đến Z' miễn phí vào các ngày 5, 12, 19 và 26/07/2025. Mỗi buổi kéo dài 3 tiếng, học viên được thực hành trực tiếp lắp ráp PC gaming hoàn chỉnh dưới sự hướng dẫn của kỹ thuật viên 10 năm kinh nghiệm. Bao gồm: chọn linh kiện, lắp ráp, cài đặt hệ điều hành và tối ưu hiệu năng. Đăng ký tại quầy hoặc qua hotline 1900.1515.",
+      "image": "/images/moto01.jpg"
+    },
+    {
+      "id": 11,
+      "title": "SSD NVMe PCIe 5.0 giá rẻ nhất 2025: Top 4 lựa chọn đáng mua",
+      "desc": "Tốc độ đọc lên đến 14.000 MB/s, giá đã giảm 45% so với năm ngoái — đây là thời điểm tốt nhất để nâng cấp lên PCIe 5.0.",
+      "category": "Đánh giá",
+      "categorySlug": "review",
+      "color": "green",
+      "date": "2025-05-20",
+      "views": 4800,
+      "thumbnail": "",
+      "content": "PCIe 5.0 SSD đã giảm giá mạnh trong nửa đầu 2025. Samsung 990 Pro 5.0 dẫn đầu với 14.500 MB/s đọc tuần tự, giá 1TB chỉ còn 2.100.000đ. WD Black SN850X 5.0 cân bằng tốt giữa hiệu năng random và tuần tự. Crucial T705 nổi bật với tản nhiệt tích hợp, phù hợp cho workstation. Corsair MP700 Pro SE có phần mềm quản lý tốt nhất trong nhóm. Cả 4 đều tương thích PS5 mở rộng.",
+      "image": "/images/oto1.jpg"
+    },
+    {
+      "id": 12,
+      "title": "AI trong gaming 2025: DLSS 4, FSR 4 và XeSS 2 — công nghệ nào đỉnh nhất?",
+      "desc": "So sánh trực tiếp ba công nghệ upscaling AI thế hệ mới trên cùng một tựa game — ai thắng về chất lượng hình ảnh và FPS?",
+      "category": "Công nghệ",
+      "categorySlug": "tech",
+      "color": "blue",
+      "date": "2025-05-15",
+      "views": 7200,
+      "thumbnail": "",
+      "content": "DLSS 4 của NVIDIA sử dụng mô hình transformer thay thế CNN cũ, cho chất lượng hình ảnh sắc nét hơn 30% và FPS tăng thêm 15% so với DLSS 3.5. FSR 4 của AMD lần đầu dùng machine learning thực sự, thu hẹp khoảng cách với DLSS đáng kể. XeSS 2 của Intel cải thiện vật thể chuyển động rõ rệt. Kết luận: DLSS 4 vẫn dẫn đầu, FSR 4 là lựa chọn tốt nhất cho GPU AMD, XeSS 2 phù hợp Arc và các GPU không hỗ trợ hai công nghệ kia.",
+      "image": "/images/moto02.webp"
+    }
+  ],
   "$schema": "./node_modules/json-server/schema.json"
 }

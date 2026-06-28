@@ -23,7 +23,6 @@ const ProductMenu = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
-  // ================= FETCH SẢN PHẨM CHI TIẾT =================
   useEffect(() => {
     setLoading(true);
     fetch("http://localhost:3000/ProductMenus")
@@ -40,39 +39,30 @@ const ProductMenu = () => {
       });
   }, [id]);
 
-  // ================= SCROLL LOCK MODAL =================
   useEffect(() => {
     document.body.style.overflow = showModal ? "hidden" : "auto";
   }, [showModal]);
 
-  // ================= LOGIC XỬ LÝ GIỎ HÀNG (SỬA ĐỔI ĐỒNG BỘ CHỐNG LỖI) =================
-  // ================= LOGIC XỬ LÝ GIỎ HÀNG (SỬA ĐỒNG BỘ CHỐNG GHI ĐÈ DATA) =================
   const handleAddToCart = async (redirectToCart = false) => {
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
-    // 1. Kiểm tra trạng thái đăng nhập của người dùng
     if (!currentUser) {
       toast.warning("Vui lòng đăng nhập để mua sản phẩm này!");
       navigate("/login");
       return;
     }
 
-    // Đảm bảo lấy ID từ URL làm gốc để kiểm tra nhằm tránh bất đồng bộ state `product`
     const targetProductId = String(id);
-    const targetFromTable = "ProductMenus"; // 🌟 ĐỊNH DANH BẢNG CỦA FILE NÀY
+    const targetFromTable = "ProductMenus";
 
     try {
-      // 2. Lấy toàn bộ giỏ hàng của User này về
       const cartRes = await fetch(
         `http://localhost:3000/cart?userId=${currentUser.id}`,
       );
       let cartItems = [];
 
-      if (cartRes.ok) {
-        cartItems = await cartRes.json();
-      }
+      if (cartRes.ok) cartItems = await cartRes.json();
 
-      // Bộ cứu hộ: Nếu filter theo userId trả về rỗng do lệch kiểu dữ liệu, ta fetch all rồi tự lọc
       if (!cartItems || cartItems.length === 0) {
         const resAll = await fetch("http://localhost:3000/cart");
         if (resAll.ok) {
@@ -83,19 +73,13 @@ const ProductMenu = () => {
         }
       }
 
-      // 3. Tìm chính xác mục trùng ID VÀ bắt buộc phải trùng từ bảng "ProductMenus"
       const existingItem = cartItems.find(
         (item) =>
           String(item.productId) === targetProductId &&
-          item.fromTable === targetFromTable, // 🌟 CHECK TRÙNG CẢ BẢNG XUẤT XỨ
+          item.fromTable === targetFromTable,
       );
 
       if (existingItem) {
-        // NẾU ĐÃ CÓ -> Tiến hành PATCH tăng số lượng lên 1
-        console.log(
-          "Sản phẩm đã tồn tại, tiến hành tăng số lượng lên:",
-          existingItem.quantity + 1,
-        );
         const updateRes = await fetch(
           `http://localhost:3000/cart/${existingItem.id}`,
           {
@@ -106,32 +90,27 @@ const ProductMenu = () => {
             }),
           },
         );
-
         if (updateRes.ok) {
           toast.success("Đã tăng số lượng sản phẩm trong giỏ hàng!");
-          window.dispatchEvent(new Event("cartUpdated")); // Đồng bộ lại số lượng hiển thị trên Badge Header
+          window.dispatchEvent(new Event("cartUpdated"));
           if (redirectToCart) navigate("/cart");
         }
       } else {
-        // NẾU CHƯA CÓ -> Tiến hành POST thêm mới kèm định danh độc nhất không lo đè lên ID của Laptop/Component
-        console.log("Sản phẩm mới, tiến hành lưu vào DB...");
         const newCartItem = {
-          id: `cart-menu-${targetProductId}-${Date.now()}`, // 🌟 TẠO ID MỚI TRÁNH ĐÈ DATA TRONG DB.JSON
+          id: `cart-menu-${targetProductId}-${Date.now()}`,
           userId: currentUser.id,
           productId: targetProductId,
           quantity: 1,
-          fromTable: targetFromTable, // Đóng dấu xuất xứ để phân biệt với các bảng trùng ID khác
+          fromTable: targetFromTable,
         };
-
         const postRes = await fetch("http://localhost:3000/cart", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newCartItem),
         });
-
         if (postRes.ok) {
           toast.success("Thêm vào giỏ hàng thành công!");
-          window.dispatchEvent(new Event("cartUpdated")); // Đồng bộ Badge giỏ hàng trên Header
+          window.dispatchEvent(new Event("cartUpdated"));
           if (redirectToCart) navigate("/cart");
         }
       }
@@ -141,7 +120,6 @@ const ProductMenu = () => {
     }
   };
 
-  // ================= GIAO DIỆN TRẠNG THÁI LOADING =================
   if (loading) {
     return (
       <>
@@ -154,7 +132,6 @@ const ProductMenu = () => {
     );
   }
 
-  // ================= GIAO DIỆN KHI KHÔNG TÌM THẤY SẢN PHẨM =================
   if (!product) {
     return (
       <>
@@ -177,10 +154,11 @@ const ProductMenu = () => {
     <>
       <Header />
 
-      <div className="bread-bar">
-        <div className="inner-bread">
+      {/* BREADCRUMB */}
+      <div className="pm-breadcrumb">
+        <div className="pm-breadcrumb__inner">
           <Link to="/">
-            <span>Trang chủ </span>
+            <span>Trang chủ</span>
           </Link>
           <Link to="/">
             <span>Máy tính mới</span>
@@ -191,58 +169,59 @@ const ProductMenu = () => {
         </div>
       </div>
 
-      <div className="product-menu-page">
-        <div className="container">
-          <div className="product-wrapper">
-            {/* ================= KHU VỰC BÊN TRÁI ================= */}
-            <div className="product-detail">
-              <div className="product-left">
-                <div className="product-image">
+      {/* MAIN PAGE */}
+      <div className="pms-page">
+        <div className="pms-container">
+          <div className="pms-layout">
+            <div className="pms-content">
+              {/* LEFT COLUMN */}
+              <div className="pms-col pms-col--left">
+                <div className="pms-img-wrap">
                   <img src={product.image} alt={product.name} />
                 </div>
 
-                <div className="spec-box">
+                <div className="pms-specs">
                   <h3>THÔNG SỐ KỸ THUẬT</h3>
                   {product.specs &&
                     Object.entries(product.specs).map(([key, value]) => (
-                      <div className="spec-row" key={key}>
+                      <div className="pms-specs__row" key={key}>
                         <span>{key}</span>
                         <span>{value}</span>
                       </div>
                     ))}
                 </div>
 
-                <div className="support-sidebar-box">
+                <div className="pms-support">
                   <h4>Hỗ trợ mua hàng</h4>
-                  <div className="support-item">
-                    <span className="icon">
+                  <div className="pms-support__item">
+                    <span className="pms-support__icon">
                       <IoCall />
                     </span>
                     <p>
                       Tổng đài tư vấn: <strong>1900.1515</strong>
                     </p>
                   </div>
-                  <div className="support-item">
-                    <span className="icon">
+                  <div className="pms-support__item">
+                    <span className="pms-support__icon">
                       <FaRocketchat />
                     </span>
                     <p>Chat trực tuyến với nhân viên hỗ trợ</p>
                   </div>
-                  <div className="support-item">
-                    <span className="icon">
+                  <div className="pms-support__item">
+                    <span className="pms-support__icon">
                       <FcShipped />
                     </span>
                     <p>Giao hàng miễn phí nội thành 2h</p>
                   </div>
-                  <button className="btn-zalo-contact">Gọi Ngay</button>
+                  <button className="pms-support__btn">Gọi Ngay</button>
                 </div>
               </div>
 
-              {/* ================= KHU VỰC Ở GIỮA ================= */}
-              <div className="product-center">
+              {/* CENTER COLUMN */}
+              <div className="pms-col pms-col--center">
                 <h1>{product.name}</h1>
 
-                <div className="product-meta">
+                <div className="pms-meta">
                   <span>
                     <b>Thương hiệu:</b> {product.brand}
                   </span>
@@ -254,17 +233,17 @@ const ProductMenu = () => {
                   </span>
                 </div>
 
-                <div className="price-box">
-                  <span className="price">
+                <div className="pms-price">
+                  <span className="pms-price__current">
                     {product.price?.toLocaleString()}đ
                   </span>
-                  <span className="old-price">
+                  <span className="pms-price__old">
                     {product.oldPrice?.toLocaleString()}đ
                   </span>
                 </div>
 
-                <div className="promotion-box">
-                  <h3> Khuyến mãi đặc biệt</h3>
+                <div className="pms-promo">
+                  <h3>Khuyến mãi đặc biệt</h3>
                   <ul>
                     {product.promotions?.map((p, i) => (
                       <li key={i}>{p}</li>
@@ -272,25 +251,23 @@ const ProductMenu = () => {
                   </ul>
                 </div>
 
-                {/* KHU VỰC HÀNH ĐỘNG NÚT BẤM ĐÃ ĐƯỢC LẮP LOGIC CHUẨN */}
-                <div className="purchase-actions-groups">
+                <div className="pms-actions">
                   <button
-                    className="btn-add-to-cart-bits"
+                    className="pms-actions__cart"
                     onClick={() => handleAddToCart(false)}
                   >
                     THÊM VÀO GIỎ HÀNG
                   </button>
 
-                  <div className="sub-buy-buttons-rows">
+                  <div className="pms-actions__row">
                     <button
-                      className="btn-buy-now-splits"
+                      className="pms-actions__buy"
                       onClick={() => handleAddToCart(true)}
                     >
                       MUA NGAY
                     </button>
-
                     <button
-                      className="btn-installment-splits"
+                      className="pms-actions__installment"
                       onClick={() => setShowInstallment(true)}
                     >
                       TRẢ GÓP
@@ -299,26 +276,26 @@ const ProductMenu = () => {
                 </div>
 
                 <button
-                  className="btn-show-description"
+                  className="pms-desc-toggle"
                   onClick={() => setShowModal(true)}
                 >
                   Xem chi tiết mô tả sản phẩm
                 </button>
               </div>
 
-              {/* ================= KHU VỰC BÊN PHẢI ================= */}
-              <div className="detail-right-policie">
+              {/* RIGHT COLUMN */}
+              <div className="pms-col pms-col--right">
                 <h3>CHÍNH SÁCH</h3>
-                <div className="policy-item-rows">
+                <div className="pms-policy__item">
                   <FaShippingFast /> Giao hàng nhanh
                 </div>
-                <div className="policy-item-rows">
+                <div className="pms-policy__item">
                   <FaAddressCard /> Trả góp linh hoạt
                 </div>
-                <div className="policy-item-rows">
+                <div className="pms-policy__item">
                   <FaCcApplePay /> Thanh toán bảo mật
                 </div>
-                <div className="policy-item-rows">
+                <div className="pms-policy__item">
                   <MdCurrencyExchange /> Đổi trả 7 ngày nhanh chóng
                 </div>
               </div>
@@ -327,11 +304,14 @@ const ProductMenu = () => {
         </div>
       </div>
 
-      {/* ================= MODAL HIỂN THỊ MÔ TẢ CHI TIẾT ================= */}
+      {/* MODAL MÔ TẢ */}
       {(showModal || showInstallment) && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="close-modal" onClick={() => setShowModal(false)}>
+        <div className="pms-modal-backdrop" onClick={() => setShowModal(false)}>
+          <div className="pms-modal-box" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="pms-modal__close"
+              onClick={() => setShowModal(false)}
+            >
               ×
             </button>
             <h2>{product.description?.title}</h2>
@@ -346,15 +326,15 @@ const ProductMenu = () => {
         </div>
       )}
 
-      {/* ================= DANH SÁCH SẢN PHẨM LIÊN QUAN ================= */}
-      <section className="related-products">
+      {/* SẢN PHẨM LIÊN QUAN */}
+      <section className="pms-related">
         <h2>SẢN PHẨM LIÊN QUAN</h2>
-        <div className="related-grid">
+        <div className="pms-related__grid">
           {products
             .filter((p) => p.id !== product.id)
             .slice(0, 5)
             .map((item) => (
-              <div key={item.id} className="related-card">
+              <div key={item.id} className="pms-related__card">
                 <img src={item.image} alt={item.name} />
                 <h4>{item.name}</h4>
                 <p>{item.price?.toLocaleString()}đ</p>

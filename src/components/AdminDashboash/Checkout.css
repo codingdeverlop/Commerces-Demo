@@ -422,3 +422,20 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Thêm vào Checkout.css nếu cần */
+.sum-rows {
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+  margin-top: 10px;
+}
+.sum-rows p {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.total-price {
+  font-size: 18px;
+  font-weight: bold;
+  color: #d32f2f;
+}

@@ -1,140 +1,243 @@
-/* Khung bọc tổng thể khu vực Laptop */
-.laptop-menu {
+/* LaptopUser.css */
+
+.laptop-menus {
+  --ink: #10172a;
+  --muted: #64748b;
+  --accent: #4f46e5;
+  --accent-dark: #4338ca;
+  --accent-soft: #eef0ff;
+  --gold: #f59e0b;
+  --price: #e11d48;
+  --border: #e6e8f0;
+  --surface: #ffffff;
+  --surface-soft: #f8f9fc;
+
   max-width: 1200px;
-  margin: 50px auto; /* Tạo khoảng cách thoáng đãng giữa các khối sản phẩm */
+  margin: 56px auto;
   padding: 0 15px;
 }
 
-/* Thanh tiêu đề chứa chữ "LAPTOP" và dãy nút bấm điều hướng */
-.laptop-list {
+/* ---------- Thanh đầu đề ---------- */
+
+.laptop-lists {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-  border-bottom: 2px solid #0b5ed7; /* Đường kẻ gạch chân màu xanh thương hiệu */
-  padding-bottom: 15px;
+  margin-bottom: 28px;
+  padding-bottom: 18px;
   flex-wrap: wrap;
   gap: 20px;
+  border-bottom: 1px solid var(--border);
 }
 
-/* Tiêu đề chữ "LAPTOP" */
-.laptop-list h2 {
-  font-size: 24px;
-  color: #333333;
-  font-weight: 700;
+.laptop-lists h2 {
+  font-size: 25px;
+  color: var(--ink);
+  font-weight: 800;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   position: relative;
-  padding-left: 15px;
+  padding-left: 18px;
   margin: 0;
 }
 
-/* Vạch trang trí màu cam bên trái chữ LAPTOP */
-.laptop-list h2::before {
+/* Vạch gradient amber -> indigo, là chi tiết "signature" xuyên suốt design */
+.laptop-lists h2::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 10%;
-  height: 80%;
-  width: 4px;
-  background-color: #ff9800;
-  border-radius: 2px;
+  top: 6%;
+  height: 88%;
+  width: 5px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--gold), var(--accent));
 }
 
-/* Thanh điều hướng (Khung bọc các nút bấm) */
-.laptop-container {
+/* ---------- Tabs danh mục ---------- */
+
+.laptop-containers {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-/* SỬA TẠI ĐÂY: Style chuẩn cho từng nút bấm danh mục Laptop (Laptop cũ, mới, gaming...) */
-.laptop-char {
-  padding: 8px 42px;
-  border: 1px solid #e0e0e0;
-  border-radius: 20px; /* Tạo hình Oval dẹt thanh lịch */
-  background: #ffffff;
-  color: #555555;
+.laptop-chars {
+  padding: 9px 20px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
 }
 
-/* Hiệu ứng rê chuột vào hoặc khi nút đó được chọn */
-.laptop-char:hover,
-.laptop-char.active {
-  background: #0b5ed7;
-  border-color: #0b5ed7;
+/* Hover: chỉ tint nhẹ, KHÔNG fill đặc để phân biệt rõ với active */
+.laptop-chars:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent-soft);
+  color: var(--accent-dark);
+}
+
+.laptop-chars:active {
+  transform: scale(0.97);
+}
+
+/* Active: gradient fill + glow nhẹ, là tab đang được chọn */
+.laptop-chars.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  border-color: var(--accent-dark);
   color: #ffffff;
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.28);
 }
 
-/* ==========================================================================
-   BIỆN PHÁP CHỐNG ĐÈ CSS GIỮA CÁC KHỐI SẢN PHẨM
-   ========================================================================== */
+.laptop-chars:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 
-/* 1. Ép lưới sản phẩm Laptop luôn hiển thị cố định 4 cột */
-.laptop-menu .product-grid {
+/* ---------- Lưới sản phẩm ---------- */
+
+.laptop-menus .laptop-grid-layouts {
   display: grid;
   grid-template-columns: repeat(4, 1fr) !important;
-  gap: 20px !important;
+  gap: 22px !important;
   width: 100% !important;
 }
 
-/* 2. Style chi tiết cho thẻ Card sản phẩm Laptop */
-.laptop-menu .product-card {
-  background: #ffffff;
-  border: 1px solid #eaeaea;
-  border-radius: 12px;
-  padding: 15px;
+.laptop-grid-layouts .product-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: all 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
   position: relative;
-  box-shadow: none;
+  box-shadow: 0 1px 2px rgba(16, 23, 42, 0.04);
+  overflow: hidden;
 }
 
-/* Hiệu ứng nhấc nhẹ Card lên và đổ bóng xanh nhạt khi hover */
-.laptop-menu .product-card:hover {
-  transform: translateY(-4px);
-  border-color: #0b5ed7;
-  box-shadow: 0 6px 18px rgba(11, 94, 215, 0.08);
+/* Vạch màu mảnh phía trên card, chỉ hiện rõ khi hover - tạo cảm giác "được chọn" */
+.laptop-grid-layouts .product-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--accent));
+  opacity: 0;
+  transition: opacity 0.25s ease;
 }
 
-/* 3. Khung chứa ảnh Laptop để ảnh không làm trồi sụt kích thước Card */
-.laptop-menu .product-card-img {
+.laptop-grid-layouts .product-card:hover {
+  transform: translateY(-6px);
+  border-color: transparent;
+  box-shadow: 0 16px 28px rgba(16, 23, 42, 0.1);
+}
+
+.laptop-grid-layouts .product-card:hover::before {
+  opacity: 1;
+}
+
+.laptop-grid-layouts .product-card-img {
   width: 100%;
-  height: auto; /* SỬA TỪ 160px LÊN 200px (hoặc 220px tùy bạn muốn to mức nào) */
+  height: 168px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
-  margin-bottom: 10px;
+  background: var(--surface-soft);
+  border-radius: 10px;
+  margin-bottom: 14px;
+  overflow: hidden;
 }
 
-.laptop-menu .product-card-img img {
+.laptop-grid-layouts .product-card-img img {
   height: auto;
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain; /* Giữ nguyên tỷ lệ gốc của ảnh, không méo hình */
+  max-width: 85%;
+  max-height: 85%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
 }
 
-/* 4. Định dạng tên sản phẩm và giá cả của Laptop */
-.laptop-menu .product-card-info h4 {
+.laptop-grid-layouts .product-card:hover .product-card-img img {
+  transform: scale(1.06);
+}
+
+.laptop-grid-layouts .product-card-info h4 {
   font-size: 14px;
-  color: #333;
+  color: var(--ink);
+  font-weight: 600;
   line-height: 1.4;
-  height: 40px; /* Giới hạn chữ hiển thị tối đa trong 2 dòng */
+  height: 40px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
-/* Làm nổi bật giá tiền hiện tại */
-.laptop-menu .current-price {
-  font-size: 15px;
-  font-weight: 700;
-  color: #d32f2f;
+.laptop-grid-layouts .current-price {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--price);
+  letter-spacing: 0.01em;
+}
+
+.laptop-grid-layouts p {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  font-style: italic;
+  padding: 48px 0;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1024px) {
+  .laptop-menus .laptop-grid-layouts {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .laptop-menus {
+    margin: 36px auto;
+  }
+
+  .laptop-lists h2 {
+    font-size: 21px;
+  }
+
+  .laptop-menus .laptop-grid-layouts {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .laptop-menus .laptop-grid-layouts {
+    grid-template-columns: repeat(1, 1fr) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .laptop-chars,
+  .laptop-grid-layouts .product-card,
+  .laptop-grid-layouts .product-card-img img {
+    transition: none;
+  }
 }

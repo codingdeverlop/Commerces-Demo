@@ -174,11 +174,12 @@ const ProductManager = () => {
               <option value="catenogies">Categories</option>
               <option value="eventList">Event List</option>
               <option value="LaptopUser">Laptop User</option>
+              <option value="ProductPagies">Product Pagies</option>
             </select>
           </div>
 
           <button onClick={openAddModal} className="pm-btn-add">
-            ➕ Thêm sản phẩm mới
+            Thêm sản phẩm mới
           </button>
         </div>
 
@@ -335,7 +336,7 @@ const ProductManager = () => {
                 className="modal-close-btn"
                 onClick={() => setIsModalOpen(false)}
               >
-                ×
+                X
               </button>
             </h3>
 

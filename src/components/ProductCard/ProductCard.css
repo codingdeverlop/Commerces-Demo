@@ -181,21 +181,3 @@
   text-decoration: none;
   color: #0057b8;
 }
-
-/* 5. GHI ĐÈ STYLE CỦA PRODUCTCARD KHI NẰM TRONG TRANG NÀY */
-/* Đảm bảo ảnh sản phẩm luôn đẹp và đồng nhất trong trang danh mục */
-.catenogy-page .product-card img {
-  height: 200px; /* Chiều cao cố định để các card bằng nhau */
-  object-fit: contain;
-  padding: 10px;
-}
-
-/* Đảm bảo tên sản phẩm không làm vỡ card */
-.catenogy-page .product-card h4 {
-  height: 40px; /* Giữ cố định 2 dòng */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}

@@ -1,36 +1,35 @@
 import "./LaptopUser.css";
-import LaptopCard from "../ProductCard/LaptopCard"; // Đã import rất chuẩn
+import LaptopCard from "../ProductCard/LaptopCard";
+import { useNavigate } from "react-router-dom";
+
+const TABS = [
+  { label: "LAPTOP CŨ", category: "laptop-cu" },
+  { label: "LAPTOP GAMING", category: "laptop-gaming" },
+  { label: "LAPTOP MỚI", category: "laptop-moi" },
+  { label: "LAPTOP ĐỒ HỌA", category: "laptop-do-hoa" },
+];
 
 const LaptopUser = ({ laptopData }) => {
-  const char = ["LAPTOP CŨ", "LAPTOP GAMING", "LAPTOP MỚI", "LAPTOP ĐỒ HỌA"];
+  const navigate = useNavigate();
 
   return (
-    <section className="laptop-menu">
-      <div className="laptop-list">
+    <section className="laptop-menus">
+      <div className="laptop-lists">
         <h2>LAPTOP</h2>
-
-        <nav className="laptop-container">
-          {char.map((item, index) => (
+        <nav className="laptop-containers">
+          {TABS.map((tab, index) => (
             <button
               key={index}
-              className={`laptop-char ${index === 0 ? "active" : ""}`}
+              className={`laptop-chars ${index === 0 ? "active" : ""}`}
+              onClick={() => navigate(`/laptop/${tab.category}`)}
             >
-              {item}
+              {tab.label}
             </button>
           ))}
         </nav>
       </div>
 
-      {/* ✅ SỬA ĐOẠN NÀY: Thay <ProductGrid /> bằng vòng lặp map trực tiếp LaptopCard */}
-      <div
-        className="laptop-grid-layout"
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "20px",
-          marginTop: "20px",
-        }}
-      >
+      <div className="laptop-grid-layouts">
         {laptopData && laptopData.length > 0 ? (
           laptopData.map((item) => <LaptopCard key={item.id} product={item} />)
         ) : (

@@ -8,7 +8,7 @@ const LaptopCard = ({ product }) => {
   const navigate = useNavigate();
 
   const handleGoToDetail = () => {
-    navigate(`/laptop/${product.id}`);
+    navigate(`/laptop-detail/${product.id}`);
   };
 
   return (

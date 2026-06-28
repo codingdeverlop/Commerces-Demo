@@ -1,137 +1,143 @@
-.sidebar {
-  width: 270px;
+/* ===========================
+   NAV PANEL
+=========================== */
+.nav-panel {
+  width: 280px;
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  position: relative;
-  font-family: "Segoe UI", sans-serif;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  overflow: visible;
+  border: 1px solid #e8e8e8;
 }
 
-.sidebar-menu {
+/* ===========================
+   MENU
+=========================== */
+.nav-panel__list {
   list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
 
-.sidebar-item {
+.nav-panel__group {
   position: relative;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.nav-panel__group:last-child {
+  border-bottom: none;
+}
+
+/* ===========================
+   HEADER
+=========================== */
+.nav-panel__group-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 18px;
+  padding: 16px 20px;
   cursor: pointer;
-  border-bottom: 1px solid #f2f2f2;
-  transition: all 0.3s ease;
   font-size: 15px;
-  font-weight: 500;
-  color: #333;
+  font-weight: 600;
+  color: #222;
+  transition: 0.25s;
 }
 
-.sidebar-item:last-child {
-  border-bottom: none;
+.nav-panel__group-header:hover {
+  background: #0057ff;
+  color: white;
 }
 
-.sidebar-item:hover {
-  background: #0b63b6;
-  color: #fff;
+.nav-panel__group:hover .nav-panel__chevron {
+  transform: rotate(90deg);
 }
 
-.sidebar-item:hover .arrow {
-  color: #fff;
-  transform: translateX(5px);
-}
-
-.arrow {
-  font-size: 20px;
-  color: #999;
+.nav-panel__chevron {
+  font-size: 18px;
   transition: 0.3s;
 }
 
-/* ================= SUB MENU ================= */
-
-/* Luôn ẩn submenu; chỉ hiện khi hover vào item */
-.submenu {
+/* ===========================
+   DROPDOWN
+=========================== */
+.nav-panel__dropdown {
   position: absolute;
-  left: 100%;
   top: 0;
-  width: 250px;
+  left: 100%;
+  width: 240px;
+
   background: white;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border-radius: 0 14px 14px 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+
   opacity: 0;
   visibility: hidden;
-  transform: translateX(20px);
-  transition:
-    opacity 0.25s ease,
-    transform 0.25s ease,
-    visibility 0s linear 0.25s;
-  z-index: 999;
-  overflow: hidden;
-  pointer-events: none;
+  transform: translateX(15px);
+
+  transition: 0.25s ease;
+  z-index: 100;
 }
 
-/* Hover để kéo ra */
-.sidebar-item:hover .submenu {
+.nav-panel__group:hover .nav-panel__dropdown {
   opacity: 1;
   visibility: visible;
   transform: translateX(0);
-  transition:
-    opacity 0.25s ease,
-    transform 0.25s ease,
-    visibility 0s;
-  pointer-events: auto;
 }
 
-.submenu-item {
+/* ===========================
+   LINK
+=========================== */
+.nav-panel__link {
   padding: 14px 18px;
-  font-size: 14px;
-  color: #333;
-  border-bottom: 1px solid #f5f5f5;
-  transition: 0.25s;
   cursor: pointer;
+  font-size: 14px;
+  color: #444;
+  transition: 0.25s;
+  border-bottom: 1px solid #f4f4f4;
 }
 
-.submenu-item:last-child {
+.nav-panel__link:last-child {
   border-bottom: none;
 }
 
-.submenu-item:hover {
-  background: #0b63b6;
-  color: white;
+.nav-panel__link:hover {
+  background: #f3f7ff;
+  color: #0057ff;
   padding-left: 28px;
 }
 
-/* Scroll nếu menu quá dài */
-
-.sidebar::-webkit-scrollbar {
+/* ===========================
+   SCROLL BAR
+=========================== */
+.nav-panel__dropdown::-webkit-scrollbar {
   width: 6px;
 }
 
-.sidebar::-webkit-scrollbar-thumb {
-  background: #c7c7c7;
-  border-radius: 10px;
+.nav-panel__dropdown::-webkit-scrollbar-thumb {
+  background: #c9c9c9;
+  border-radius: 20px;
 }
 
-/* Responsive */
-
+/* ===========================
+   MOBILE
+=========================== */
 @media (max-width: 992px) {
-  .sidebar {
+  .nav-panel {
     width: 100%;
   }
 
-  .submenu {
+  .nav-panel__dropdown {
     position: static;
-    width: 100%;
     opacity: 1;
     visibility: visible;
     transform: none;
-    display: none;
+    width: 100%;
     box-shadow: none;
     border-radius: 0;
+    display: none;
   }
 
-  .sidebar-item:hover .submenu {
+  .nav-panel__group:hover .nav-panel__dropdown {
     display: block;
   }
 }
